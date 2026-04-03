@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAMA — Estructuras Centro-Periferia</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:        #070E06;
+    --amber:     #C49038;
+    --gold:      #D4A848;
+    --terra:     #9A3820;
+    --sage:      #4A6840;
+    --moss:      #243820;
+    --sage-lt:   #7AA870;
+    --cream:     #EAE2D2;
+    --warm-wt:   #DDD3BE;
+    --muted:     #6E6048;
+    --muted-lt:  #9A8868;
+  }
+
+  body {
+    background: #3E5030;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .flyer {
+    width: 600px;
+    height: 780px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 55px 160px rgba(0,0,0,0.75),
+      0 10px 40px rgba(0,0,0,0.45),
+      inset 0 0 0 1px rgba(74,104,64,0.12);
+  }
+
+  /* ── CANVAS ── */
+  #vortexBg {
+    position: absolute; top: 0; left: 0;
+    width: 600px; height: 780px;
+    z-index: 1;
+  }
+
+  /* ── GRADIENT OVERLAY — more transparent in the vortex zone ── */
+  .overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      rgba(7,14,6,0.50)  0%,
+      rgba(7,14,6,0.02) 12%,
+      rgba(7,14,6,0.02) 30%,
+      rgba(7,14,6,0.32) 44%,
+      rgba(7,14,6,0.65) 58%,
+      rgba(7,14,6,0.84) 72%,
+      rgba(7,14,6,0.93) 86%,
+      rgba(7,14,6,0.97) 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* ── GRAIN ── */
+  .grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    opacity: 0.42; z-index: 25;
+    mix-blend-mode: screen; pointer-events: none;
+  }
+
+  /* ── GHOST LETTER ── */
+  .ghost-C {
+    position: absolute; z-index: 3;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700; font-style: italic;
+    font-size: 600px; line-height: 1;
+    color: #4A6840;
+    opacity: 0.055;
+    top: -55px; right: -100px;
+    user-select: none; pointer-events: none;
+  }
+
+  /* ── TOP STRIP ── */
+  .top-strip {
+    position: relative; z-index: 10;
+    padding: 10px 32px;
+    border-bottom: 1px solid rgba(74,104,64,0.30);
+    background: rgba(4,8,4,0.78);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .seminario-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 3.5px;
+    color: var(--cream); text-transform: uppercase; opacity: 0.60;
+  }
+
+  .date-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 2px;
+    color: var(--amber); text-transform: uppercase; opacity: 0.80;
+  }
+
+  /* ── LOGO ── */
+  .logo-area {
+    position: relative; z-index: 10;
+    padding: 14px 36px 0;
+  }
+
+  .trama-logo-wrap {
+    position: relative;
+    display: inline-block; line-height: 1;
+  }
+
+  .trama-ghost {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px; letter-spacing: 12px;
+    color: #4A6840; opacity: 0.10;
+    position: absolute; top: 5px; left: 5px;
+    user-select: none; pointer-events: none;
+  }
+
+  .trama-solid {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px; letter-spacing: 12px;
+    color: var(--cream);
+    position: relative; z-index: 2;
+    opacity: 0.85;
+    text-shadow: 0 2px 30px rgba(4,8,4,0.90);
+  }
+
+  .logo-rule {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg,
+      rgba(74,104,64,0.65) 0%,
+      rgba(74,104,64,0.25) 55%,
+      transparent 88%);
+    margin-top: 5px;
+  }
+
+  /* ── TITLE BLOCK — three big lines ── */
+  .title-block {
+    position: relative; z-index: 10;
+    padding: 0 36px;
+    margin-top: 88px;
+  }
+
+  /* Line 1 — left */
+  .title-row-l  { text-align: left;   line-height: 1; }
+  /* Line 2 — right */
+  .title-row-r  { text-align: right;  line-height: 1; margin-top: -2px; }
+  /* Line 3 — left, slightly inset */
+  .title-row-l2 { text-align: left;   line-height: 1; margin-top: 4px; padding-left: 4px; }
+
+  /* BIG title font */
+  .t-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 54px;
+    line-height: 0.95;
+    color: var(--cream);
+    letter-spacing: -0.8px;
+    display: inline;
+    text-shadow:
+      0 2px 28px rgba(4,8,4,0.95),
+      0 0 55px rgba(4,8,4,0.80);
+  }
+
+  /* SECONDARY big title font — slightly smaller */
+  .t-med {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 0.96;
+    color: var(--cream);
+    letter-spacing: -0.4px;
+    display: inline;
+    opacity: 0.75;
+    text-shadow:
+      0 2px 24px rgba(4,8,4,0.95),
+      0 0 50px rgba(4,8,4,0.80);
+  }
+
+  .t-italic  { font-style: italic; }
+  .t-amber   { color: var(--amber); opacity: 1 !important; }
+  .t-sage    { color: var(--sage-lt); opacity: 0.80 !important; }
+
+  /* ── DIVIDER ── */
+  .title-divider {
+    display: flex; align-items: center; gap: 8px;
+    margin: 13px 0 11px;
+  }
+
+  .td-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(74,104,64,0.50), rgba(74,104,64,0.12));
+  }
+  .td-line.r {
+    background: linear-gradient(270deg, rgba(74,104,64,0.50), rgba(74,104,64,0.12));
+  }
+  .td-diamond {
+    width: 5px; height: 5px;
+    background: var(--sage); opacity: 0.65;
+    transform: rotate(45deg); flex-shrink: 0;
+  }
+
+  /* ── SMALL SUBTITLE ── */
+  .title-small {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300; font-size: 11.5px;
+    color: var(--cream); opacity: 0.40;
+    line-height: 1.65;
+    letter-spacing: 0.2px;
+  }
+  .title-small em {
+    font-style: italic;
+    color: var(--amber);
+    opacity: 1;
+  }
+
+  /* ── DIÁLOGOS LINE ── */
+  .dialogos-block {
+    position: relative; z-index: 10;
+    margin: 17px 36px 0;
+    padding: 10px 0;
+    border-top: 1px solid rgba(74,104,64,0.20);
+    border-bottom: 1px solid rgba(74,104,64,0.20);
+  }
+
+  .dialogos-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 7px; letter-spacing: 3.5px;
+    color: var(--amber); text-transform: uppercase;
+    opacity: 0.55; margin-bottom: 5px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dialogos-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(196,144,56,0.25), transparent);
+  }
+
+  .dialogos-text {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300; font-size: 10.5px;
+    color: var(--cream); opacity: 0.50;
+    line-height: 1.65; letter-spacing: 0.25px;
+  }
+
+  /* ── SPEAKER ── */
+  .speaker-block {
+    position: relative; z-index: 10;
+    margin: 15px 36px 0;
+    padding: 11px 18px;
+    background: rgba(74,104,64,0.07);
+    border-left: 3px solid rgba(74,104,64,0.40);
+  }
+
+  .speaker-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 3.5px;
+    color: var(--amber); text-transform: uppercase;
+    margin-bottom: 4px; opacity: 0.65;
+  }
+
+  .speaker-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 3px;
+    color: var(--cream); line-height: 1.1; opacity: 0.82;
+  }
+
+  .speaker-role {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 300;
+    color: var(--muted-lt); margin-top: 2px; opacity: 0.85;
+  }
+
+  /* ── INFO ── */
+  .info-section {
+    position: relative; z-index: 10;
+    padding: 13px 36px;
+    margin-top: 13px;
+    border-top: 1px solid rgba(74,104,64,0.16);
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .info-item { display: flex; align-items: flex-start; gap: 10px; }
+
+  .info-icon {
+    width: 20px; height: 20px; flex-shrink: 0;
+    color: var(--sage); opacity: 0.60; margin-top: 1px;
+  }
+
+  .info-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 7px; letter-spacing: 3px;
+    color: var(--amber); text-transform: uppercase;
+    margin-bottom: 3px; opacity: 0.58;
+  }
+
+  .info-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 600;
+    color: var(--cream); line-height: 1.5; opacity: 0.76;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0; z-index: 10;
+    border-top: 1px solid rgba(74,104,64,0.24);
+    background: rgba(3,7,3,0.90);
+    backdrop-filter: blur(10px);
+    padding: 11px 36px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .footer-trama {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 6px;
+    color: var(--cream); opacity: 0.30;
+  }
+
+  .footer-info {
+    font-family: 'Space Mono', monospace;
+    font-size: 7px; letter-spacing: 2px;
+    color: var(--cream); opacity: 0.25;
+    text-transform: uppercase; text-align: right; line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<div class="flyer">
+
+  <canvas id="vortexBg" width="600" height="780"></canvas>
+  <div class="overlay"></div>
+  <div class="grain"></div>
+
+  <div class="ghost-C" aria-hidden="true">C</div>
+
+  <!-- TOP STRIP -->
+  <div class="top-strip">
+    <span class="seminario-badge">✦ Seminario Ciencias de la Complejidad</span>
+    <span class="date-tag">Junio 2026</span>
+  </div>
+
+  <!-- LOGO -->
+  <div class="logo-area">
+    <div class="trama-logo-wrap">
+      <span class="trama-ghost" aria-hidden="true">TRAMA</span>
+      <span class="trama-solid">TRAMA</span>
+    </div>
+    <div class="logo-rule"></div>
+  </div>
+
+  <!-- TITLE — tres líneas grandes + una pequeña -->
+  <div class="title-block">
+    <div class="title-row-l">
+      <span class="t-big">Estructuras</span>
+    </div>
+    <div class="title-row-r">
+      <span class="t-big t-italic t-amber">centro&#8209;periferia</span>
+    </div>
+    <div class="title-row-l2">
+      <span class="t-med t-italic t-sage">como estructuras disipativas</span>
+    </div>
+    <div class="title-divider">
+      <div class="td-line"></div>
+      <div class="td-diamond"></div>
+      <div class="td-line r"></div>
+    </div>
+    <div class="title-small">
+      y su relación con el intercambio <em>ecológicamente desigual</em>
+    </div>
+  </div>
+
+  <!-- DIÁLOGOS -->
+  <div class="dialogos-block">
+    <div class="dialogos-label">diálogos entre</div>
+    <div class="dialogos-text">
+      el estructuralismo latinoamericano, la ecología política,<br>
+      la economía ecológica y las ciencias de la complejidad
+    </div>
+  </div>
+
+  <!-- SPEAKER -->
+  <div class="speaker-block">
+    <div class="speaker-label">Ponente</div>
+    <div class="speaker-name">Por confirmar</div>
+    <div class="speaker-role">Ciencias de la Complejidad · UNAL</div>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-section">
+    <div class="info-item">
+      <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <div>
+        <div class="info-label">Fecha</div>
+        <div class="info-value">Miércoles · Junio 2026<br>6:00 – 8:00 p.m.</div>
+      </div>
+    </div>
+    <div class="info-item">
+      <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      <div>
+        <div class="info-label">Lugar</div>
+        <div class="info-value">Sala de Música<br>Biblioteca Central · UNAL Bogotá</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="footer-trama">TRAMA</span>
+    <span class="footer-info">Seminario permanente<br>Ciencias de la Complejidad · UNAL</span>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+//  DISSIPATIVE VORTEX v2
+//
+//  CHANGES FROM v1:
+//  ─────────────────
+//  1. ENTROPY RINGS: now very visible — thick sage-green strokes
+//     (alpha up to 0.35, lineWidth 2px, alternating amber accents).
+//     This is the visual centrepiece: the structure survives because
+//     it constantly exports entropy to the environment.
+//
+//  2. AMBIENT GREEN FIELD: broad radial sage glow in the outer region
+//     makes the green ecosystem substrate clearly visible.
+//
+//  3. PARTICLE COLORS: richer, more saturated sage-green in the
+//     outer zone, shifting to amber/terra only in the inner 40%.
+//
+//  4. BACKGROUND BASE: a subtle green radial wash fills the canvas
+//     before anything else, ensuring the black never looks pure black.
+//
+//  Architecture of the diagram:
+//    – Geo-grid  →  global territory substrate
+//    – Periphery dots  →  sparse, depleted outer field
+//    – Radial spokes  →  extraction channels
+//    – Flow particles  →  material/ecological flows going inward
+//    – Entropy rings  →  concentric expanding waves going outward
+//    – Center glow + core dot  →  the hot dissipative attractor
+// ══════════════════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('vortexBg');
+const ctx    = canvas.getContext('2d');
+const W = 600, H = 780;
+
+const CX = 298, CY = 240;
+const MAX_R = 340;
+
+// ── Deterministic LCGs ──
+function makeLCG(seed) {
+  let s = seed >>> 0;
+  return () => { s = Math.imul(1664525, s) + 1013904223 >>> 0; return s / 0xFFFFFFFF; };
+}
+const rng  = makeLCG(137);
+const rng2 = makeLCG(719);
+const rng3 = makeLCG(2053);
+
+// ── Color palette ──
+const C = {
+  amber:   [196, 144,  56],
+  gold:    [218, 175,  72],
+  terra:   [154,  56,  32],
+  rust:    [110,  42,  20],
+  sage:    [ 74, 108,  58],   // richer green
+  sageLt:  [100, 148,  80],   // lighter sage for rings
+  moss:    [ 38,  60,  28],
+  forest:  [ 18,  30,  12],
+  cream:   [234, 226, 210],
+};
+
+function rgba([r,g,b], a) { return `rgba(${r|0},${g|0},${b|0},${a.toFixed(3)})`; }
+function lerpC(ca, cb, t) {
+  t = Math.max(0, Math.min(1, t));
+  return [ca[0]+(cb[0]-ca[0])*t, ca[1]+(cb[1]-ca[1])*t, ca[2]+(cb[2]-ca[2])*t];
+}
+
+// ── Periphery dots ──
+const periDots = [];
+for (let i = 0; i < 140; i++) {
+  const a = rng2() * Math.PI * 2;
+  const r = MAX_R * (0.70 + rng2() * 0.62);
+  const x = CX + Math.cos(a) * r;
+  const y = CY + Math.sin(a) * r;
+  if (x < -40 || x > W+40 || y < -40 || y > H+40) continue;
+  periDots.push({
+    x, y,
+    r: 0.40 + rng2() * 1.15,
+    alpha: 0.06 + rng2() * 0.10,
+    ph: rng2() * Math.PI * 2,
+    f:  0.25 + rng2() * 0.45,
+  });
+}
+
+// ── Radial spokes ──
+const N_SPOKES = 14;
+const spokeData = Array.from({length: N_SPOKES}, (_, i) => ({
+  baseAngle: (i / N_SPOKES) * Math.PI * 2,
+  weight:    0.35 + rng3() * 0.55,
+  len:       MAX_R * (0.90 + rng3() * 0.25),
+}));
+
+// ── Entropy rings — NOW PROMINENT ──
+// Alternating sage-green and amber rings
+const N_RINGS = 8;
+const rings = Array.from({length: N_RINGS}, (_, i) => ({
+  phase: i / N_RINGS,
+  speed: 0.0020 + (i % 3) * 0.0004,
+  isAmber: i % 3 === 0,  // every 3rd ring is amber-tinted
+}));
+
+// ── Flow particles ──
+const N_PART = 240;
+
+function spawnParticle(rng, stagger) {
+  const a  = rng() * Math.PI * 2;
+  const r  = MAX_R * (0.52 + rng() * 0.54);
+  const sd = rng() < 0.68 ? 1 : -1;
+  const sr = (0.007 + rng() * 0.022) * sd;
+  const sp = 0.14 + rng() * 0.38;
+  const sz = 0.5 + rng() * 2.2;
+  const cm = rng();
+  return { a, r, sr, sp, sz, cm, ph: rng() * Math.PI * 2,
+           life: stagger ? rng() : 0 };
+}
+
+const rngP = makeLCG(5521);
+const particles = Array.from({length: N_PART}, () => spawnParticle(rngP, true));
+let rngRespawn = makeLCG(8831);
+
+// ── Animation ──
+let t = 0;
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  t += 0.0048;
+
+  const pulse = Math.sin(t * 2.3) * 0.5 + 0.5;
+
+  // ══ LAYER 0: BASE GREEN WASH ══
+  // A broad radial fill that makes the background visibly dark green,
+  // never pure black.
+  const bgWash = ctx.createRadialGradient(CX, CY, 0, CX, CY, 420);
+  bgWash.addColorStop(0,    rgba(C.sage,   0.09));
+  bgWash.addColorStop(0.35, rgba(C.sage,   0.13));  // richest green in mid-field
+  bgWash.addColorStop(0.65, rgba(C.moss,   0.10));
+  bgWash.addColorStop(0.90, rgba(C.forest, 0.08));
+  bgWash.addColorStop(1,    rgba(C.forest, 0));
+  ctx.fillStyle = bgWash;
+  ctx.fillRect(0, 0, W, H);
+
+  // ══ LAYER 1: GEO-GRID ══
+  ctx.save();
+  ctx.lineWidth = 0.45;
+  ctx.strokeStyle = rgba(C.sage, 0.038);
+  for (let y = 0; y < H; y += 22) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  for (let x = 0; x < W; x += 22) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  ctx.restore();
+
+  // ══ LAYER 2: RADIAL SPOKES ══
+  for (const sp of spokeData) {
+    const a  = sp.baseAngle + t * 0.012;
+    const ex = CX + Math.cos(a) * sp.len;
+    const ey = CY + Math.sin(a) * sp.len;
+    const g  = ctx.createLinearGradient(ex, ey, CX, CY);
+    g.addColorStop(0,    rgba(C.sage,  0));
+    g.addColorStop(0.40, rgba(C.sage,  sp.weight * 0.055));
+    g.addColorStop(0.80, rgba(C.amber, sp.weight * 0.038));
+    g.addColorStop(1,    rgba(C.amber, 0));
+    ctx.beginPath();
+    ctx.moveTo(ex, ey);
+    ctx.lineTo(CX, CY);
+    ctx.strokeStyle = g;
+    ctx.lineWidth   = sp.weight * 0.65;
+    ctx.stroke();
+  }
+
+  // ══ LAYER 3: PERIPHERY DOTS ══
+  for (const pd of periDots) {
+    const w = Math.sin(t * pd.f + pd.ph) * 0.7;
+    ctx.beginPath();
+    ctx.arc(pd.x + w, pd.y + w, pd.r, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(C.moss, pd.alpha);
+    ctx.fill();
+  }
+
+  // ══ LAYER 4: AMBIENT GLOWS ══
+  // Wide sage-green field (ecosystem substrate glowing)
+  const sg = ctx.createRadialGradient(CX, CY, MAX_R * 0.25, CX, CY, MAX_R * 0.95);
+  sg.addColorStop(0,   rgba(C.sage, 0));
+  sg.addColorStop(0.3, rgba(C.sage, 0.065));
+  sg.addColorStop(0.7, rgba(C.sage, 0.048));
+  sg.addColorStop(1,   rgba(C.sage, 0));
+  ctx.fillStyle = sg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Outer amber pre-glow
+  const og = ctx.createRadialGradient(CX, CY, 0, CX, CY, 140 + pulse * 22);
+  og.addColorStop(0,   rgba(C.amber, 0.12 + pulse * 0.05));
+  og.addColorStop(0.3, rgba(C.terra, 0.055));
+  og.addColorStop(0.7, rgba(C.sage,  0.030));
+  og.addColorStop(1,   rgba(C.sage,  0));
+  ctx.fillStyle = og;
+  ctx.fillRect(0, 0, W, H);
+
+  // Inner hot core glow
+  const mg = ctx.createRadialGradient(CX, CY, 0, CX, CY, 55 + pulse * 10);
+  mg.addColorStop(0,   rgba(C.gold,  0.32 + pulse * 0.12));
+  mg.addColorStop(0.4, rgba(C.amber, 0.15));
+  mg.addColorStop(1,   rgba(C.amber, 0));
+  ctx.fillStyle = mg;
+  ctx.fillRect(0, 0, W, H);
+
+  // ══ LAYER 5: ENTROPY RINGS — PROMINENT ══
+  // These are the visual proof of Prigogine:
+  // the structure stays ordered by exporting entropy outward.
+  for (const ring of rings) {
+    ring.phase = (ring.phase + ring.speed) % 1;
+    const r = ring.phase * MAX_R * 1.20;
+
+    // Bell-curve alpha: appears, peaks at mid-travel, fades
+    const a_base = Math.sin(ring.phase * Math.PI);
+
+    if (ring.isAmber) {
+      // Amber accent rings — thinner, subtle
+      const a = a_base * 0.18;
+      ctx.beginPath();
+      ctx.arc(CX, CY, r, 0, Math.PI * 2);
+      ctx.strokeStyle = rgba(C.amber, a);
+      ctx.lineWidth = 1.0;
+      ctx.stroke();
+    } else {
+      // Primary sage rings — thick and clear
+      // Two strokes: inner glow + crisp edge
+      const a = a_base * 0.32;
+
+      // Outer soft halo
+      ctx.beginPath();
+      ctx.arc(CX, CY, r, 0, Math.PI * 2);
+      ctx.strokeStyle = rgba(C.sageLt, a * 0.45);
+      ctx.lineWidth = 5.0;
+      ctx.stroke();
+
+      // Crisp ring edge
+      ctx.beginPath();
+      ctx.arc(CX, CY, r, 0, Math.PI * 2);
+      ctx.strokeStyle = rgba(C.sageLt, a);
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+
+  // ══ LAYER 6: FLOW PARTICLES ══
+  for (let i = 0; i < particles.length; i++) {
+    const p   = particles[i];
+    const nrm = p.r / MAX_R;
+
+    // Inward pull accelerates near center
+    const accel = 1 + (1 - nrm) * 3.2;
+    p.r -= p.sp * accel * 0.46;
+    p.a += p.sr * (1 + (1 - nrm) * 0.8);
+
+    if (p.r < 6) {
+      Object.assign(p, spawnParticle(rngRespawn, false)); continue;
+    }
+
+    const x = CX + Math.cos(p.a) * p.r;
+    const y = CY + Math.sin(p.a) * p.r;
+
+    if (x < -25 || x > W+25 || y < -25 || y > H+25) {
+      if (nrm > 0.88) continue;
+      Object.assign(p, spawnParticle(rngRespawn, false)); continue;
+    }
+
+    // Alpha
+    let alpha;
+    if (nrm > 0.83) {
+      alpha = (1 - nrm) / 0.17 * 0.42;
+    } else if (nrm < 0.09) {
+      alpha = (nrm / 0.09) * 0.55;
+    } else {
+      alpha = 0.10 + (1 - nrm) * 0.50;
+    }
+
+    // Color: sage-green outer → terra → amber inner
+    let color;
+    if (nrm > 0.60) {
+      color = lerpC(C.forest, C.sage, p.cm * (1 - nrm) * 2.5);
+    } else if (nrm > 0.28) {
+      const bf = (0.60 - nrm) / 0.32;
+      color = lerpC(C.sage, C.terra, p.cm * bf * 0.88);
+    } else {
+      color = lerpC(C.terra, C.amber, (0.28 - nrm) / 0.28);
+    }
+
+    // Micro-halo near center
+    if (nrm < 0.22 && p.sz > 1.4) {
+      const hg = ctx.createRadialGradient(x, y, 0, x, y, p.sz * 5.5);
+      hg.addColorStop(0, rgba(C.amber, alpha * 0.20));
+      hg.addColorStop(1, rgba(C.amber, 0));
+      ctx.beginPath(); ctx.arc(x, y, p.sz * 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = hg; ctx.fill();
+    }
+
+    ctx.beginPath();
+    ctx.arc(x, y, p.sz, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(color, alpha);
+    ctx.fill();
+  }
+
+  // ══ LAYER 7: CORE DOT ══
+  const cr = 4.2 + pulse * 1.8;
+  const cg = ctx.createRadialGradient(CX, CY, 0, CX, CY, cr * 1.6);
+  cg.addColorStop(0,   rgba(C.cream, 0.92));
+  cg.addColorStop(0.5, rgba(C.gold,  0.72));
+  cg.addColorStop(1,   rgba(C.gold,  0));
+  ctx.beginPath();
+  ctx.arc(CX, CY, cr, 0, Math.PI * 2);
+  ctx.fillStyle = cg; ctx.fill();
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
