@@ -1,0 +1,1025 @@
+/* ═══════════════════════════════════════════════════════════════
+   TRAMA — Design System
+   Seminario Permanente · Ciencias de la Complejidad · UNAL
+   
+   This file defines the complete visual identity for the TRAMA
+   website. All pages import this single CSS file for consistency.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+
+
+/* ═══════════════════════════════════════════════════════════════
+   1. DESIGN TOKENS — CSS Custom Properties
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Core Palette ── */
+  --trama-burgundy:     #6A0F0F;
+  --trama-deep-wine:    #4A0808;
+  --trama-wine:         #7A1830;
+  --trama-terracotta:   #A83A20;
+  --trama-rust:         #B85A28;
+  --trama-gold:         #C9A84C;
+  --trama-amber:        #D09438;
+
+  /* ── Neutrals ── */
+  --trama-cream:        #F0E8DC;
+  --trama-paper:        #EDE5D8;
+  --trama-warm-bg:      #E8DDD0;
+  --trama-warm-white:   #FAF7F2;
+  --trama-charcoal:     #1E0E0E;
+  --trama-muted:        #7A6A58;
+  --trama-muted-lt:     #9A8870;
+
+  /* ── Functional Colors ── */
+  --trama-bg-dark:      #0A0404;
+  --trama-bg-light:     var(--trama-paper);
+  --trama-text-on-dark:  var(--trama-cream);
+  --trama-text-on-light: var(--trama-charcoal);
+  --trama-accent:       var(--trama-terracotta);
+  --trama-accent-alt:   var(--trama-gold);
+
+  /* ── RGB values for rgba() usage ── */
+  --rgb-burgundy:    106, 15, 15;
+  --rgb-terracotta:  168, 58, 32;
+  --rgb-wine:        122, 24, 48;
+  --rgb-rust:        184, 90, 40;
+  --rgb-gold:        201, 168, 76;
+  --rgb-cream:       240, 232, 220;
+  --rgb-charcoal:    30, 14, 14;
+
+  /* ── Typography Scale ── */
+  --font-display:    'Bebas Neue', 'Arial Black', sans-serif;
+  --font-title:      'Cormorant Garamond', 'Georgia', serif;
+  --font-body:       'DM Sans', 'Helvetica Neue', sans-serif;
+  --font-mono:       'Space Mono', 'Courier New', monospace;
+
+  --text-xs:    0.6875rem;    /* 11px */
+  --text-sm:    0.75rem;      /* 12px */
+  --text-base:  0.9375rem;    /* 15px */
+  --text-lg:    1.125rem;     /* 18px */
+  --text-xl:    1.5rem;       /* 24px */
+  --text-2xl:   2rem;         /* 32px */
+  --text-3xl:   2.75rem;      /* 44px */
+  --text-4xl:   3.5rem;       /* 56px */
+  --text-hero:  5rem;         /* 80px */
+
+  /* ── Spacing ── */
+  --space-xs:   0.25rem;
+  --space-sm:   0.5rem;
+  --space-md:   1rem;
+  --space-lg:   1.5rem;
+  --space-xl:   2.5rem;
+  --space-2xl:  4rem;
+  --space-3xl:  6rem;
+
+  /* ── Borders & Radii ── */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  16px;
+
+  /* ── Shadows ── */
+  --shadow-card:    0 4px 24px rgba(var(--rgb-burgundy), 0.08),
+                    0 1px 4px rgba(0,0,0,0.06);
+  --shadow-elevated: 0 12px 48px rgba(var(--rgb-burgundy), 0.14),
+                     0 4px 16px rgba(0,0,0,0.08);
+  --shadow-deep:    0 30px 100px rgba(0,0,0,0.35),
+                    0 8px 32px rgba(0,0,0,0.18);
+
+  /* ── Transitions ── */
+  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 180ms;
+  --duration-mid:  320ms;
+  --duration-slow: 600ms;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   2. RESET & BASE
+   ═══════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--trama-text-on-light);
+  background: var(--trama-warm-bg);
+}
+
+body.dark-theme {
+  color: var(--trama-text-on-dark);
+  background: var(--trama-bg-dark);
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a {
+  color: var(--trama-terracotta);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-smooth);
+}
+a:hover { color: var(--trama-burgundy); }
+
+.dark-theme a { color: var(--trama-gold); }
+.dark-theme a:hover { color: var(--trama-amber); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   3. TYPOGRAPHY
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Display — Bebas Neue (logo, large headings) */
+.t-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Title — Cormorant Garamond (main titles, elegant) */
+.t-title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.t-title-italic {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.05;
+}
+
+/* Body — DM Sans */
+.t-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.t-body-sm {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+/* Mono — Space Mono (labels, tags, code) */
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* Accent color on text */
+.t-accent { color: var(--trama-terracotta); }
+.t-accent-gold { color: var(--trama-gold); }
+.t-muted { color: var(--trama-muted); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   4. TRAMA LOGO
+   Uses the official PNG image. The .trama-logo class displays
+   the full banner (TRAMA text + network sphere).
+   For contexts where the image can't load, a CSS text fallback
+   is provided via .trama-logo-text.
+   ═══════════════════════════════════════════════════════════════ */
+
+.trama-logo {
+  display: block;
+  height: auto;
+  /* Adjust width per context */
+}
+
+.trama-logo--hero {
+  width: min(420px, 75vw);
+}
+
+.trama-logo--nav {
+  width: 140px;
+}
+
+.trama-logo--footer {
+  width: 100px;
+  opacity: 0.6;
+}
+
+/* CSS-only text fallback (used if image fails) */
+.trama-logo-text {
+  font-family: var(--font-display);
+  letter-spacing: 0.15em;
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+}
+
+.trama-logo-text__ghost {
+  position: absolute;
+  top: 3px; left: 3px;
+  color: var(--trama-terracotta);
+  opacity: 0.12;
+  user-select: none;
+  pointer-events: none;
+  /* Inherit font-size from parent */
+}
+
+.trama-logo-text__solid {
+  position: relative;
+  z-index: 1;
+  color: var(--trama-burgundy);
+}
+
+.dark-theme .trama-logo-text__solid {
+  color: var(--trama-cream);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   5. LAYOUT UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+.trama-container {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.trama-container--narrow {
+  max-width: 780px;
+}
+
+.trama-section {
+  padding: var(--space-3xl) 0;
+}
+
+.trama-section + .trama-section {
+  border-top: 1px solid rgba(var(--rgb-burgundy), 0.08);
+}
+
+.dark-theme .trama-section + .trama-section {
+  border-top-color: rgba(var(--rgb-cream), 0.06);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   6. NAVIGATION BAR
+   Minimal top nav for all site pages (not flyers).
+   Logo left, links right.
+   ═══════════════════════════════════════════════════════════════ */
+
+.trama-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 14px 0;
+  background: rgba(237, 229, 216, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(var(--rgb-burgundy), 0.08);
+  transition: background var(--duration-mid) var(--ease-smooth);
+}
+
+.dark-theme .trama-nav {
+  background: rgba(10, 4, 4, 0.88);
+  border-bottom-color: rgba(var(--rgb-cream), 0.06);
+}
+
+.trama-nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.trama-nav__links {
+  display: flex;
+  gap: var(--space-xl);
+  list-style: none;
+}
+
+.trama-nav__link {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--trama-muted);
+  transition: color var(--duration-fast) var(--ease-smooth);
+  position: relative;
+}
+
+.trama-nav__link:hover,
+.trama-nav__link--active {
+  color: var(--trama-burgundy);
+}
+
+.dark-theme .trama-nav__link:hover,
+.dark-theme .trama-nav__link--active {
+  color: var(--trama-cream);
+}
+
+.trama-nav__link--active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--trama-terracotta);
+  border-radius: 1px;
+}
+
+/* Breadcrumbs (for level 3 pages) */
+.trama-breadcrumbs {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--trama-muted);
+  padding: var(--space-sm) 0;
+}
+
+.trama-breadcrumbs a {
+  color: var(--trama-muted);
+}
+
+.trama-breadcrumbs a:hover {
+  color: var(--trama-terracotta);
+}
+
+.trama-breadcrumbs__sep {
+  margin: 0 0.5em;
+  opacity: 0.4;
+}
+
+/* Mobile hamburger toggle */
+.trama-nav__toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 28px;
+  height: 20px;
+  position: relative;
+}
+
+.trama-nav__toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--trama-burgundy);
+  position: absolute;
+  left: 0;
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.trama-nav__toggle span:nth-child(1) { top: 0; }
+.trama-nav__toggle span:nth-child(2) { top: 9px; }
+.trama-nav__toggle span:nth-child(3) { top: 18px; }
+
+.dark-theme .trama-nav__toggle span {
+  background: var(--trama-cream);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   7. CARDS — Clickable entry points (seminario, mapeo, sesiones)
+   ═══════════════════════════════════════════════════════════════ */
+
+.trama-card {
+  background: var(--trama-warm-white);
+  border: 1px solid rgba(var(--rgb-burgundy), 0.06);
+  padding: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  transition: 
+    transform var(--duration-mid) var(--ease-smooth),
+    box-shadow var(--duration-mid) var(--ease-smooth),
+    border-color var(--duration-mid) var(--ease-smooth);
+  cursor: pointer;
+}
+
+.trama-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-elevated);
+  border-color: rgba(var(--rgb-terracotta), 0.18);
+}
+
+.trama-card__label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--trama-terracotta);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+
+.trama-card__label::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: var(--trama-terracotta);
+  opacity: 0.5;
+}
+
+.trama-card__title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: var(--text-2xl);
+  color: var(--trama-charcoal);
+  line-height: 1.1;
+  margin-bottom: var(--space-sm);
+}
+
+.trama-card__desc {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--trama-muted);
+  line-height: 1.6;
+}
+
+/* "Coming soon" badge */
+.trama-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid rgba(var(--rgb-gold), 0.35);
+  color: var(--trama-gold);
+  margin-top: var(--space-md);
+}
+
+.trama-badge--active {
+  border-color: rgba(var(--rgb-terracotta), 0.35);
+  color: var(--trama-terracotta);
+  background: rgba(var(--rgb-terracotta), 0.04);
+}
+
+/* Dark card variant */
+.dark-theme .trama-card {
+  background: rgba(var(--rgb-cream), 0.03);
+  border-color: rgba(var(--rgb-cream), 0.06);
+}
+
+.dark-theme .trama-card:hover {
+  border-color: rgba(var(--rgb-gold), 0.15);
+}
+
+.dark-theme .trama-card__title {
+  color: var(--trama-cream);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   8. SESSION CARDS — For the seminar calendar page
+   ═══════════════════════════════════════════════════════════════ */
+
+.session-card {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid rgba(var(--rgb-burgundy), 0.06);
+  transition: background var(--duration-fast) var(--ease-smooth);
+  text-decoration: none;
+  color: inherit;
+}
+
+.session-card:hover {
+  background: rgba(var(--rgb-terracotta), 0.03);
+  color: inherit;
+}
+
+.session-card--past {
+  opacity: 0.5;
+}
+
+.session-card__date {
+  text-align: center;
+}
+
+.session-card__day {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  line-height: 1;
+  color: var(--trama-burgundy);
+  letter-spacing: 0.05em;
+}
+
+.session-card__month {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--trama-muted);
+  margin-top: 2px;
+}
+
+.session-card__info {}
+
+.session-card__title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  color: var(--trama-charcoal);
+  line-height: 1.15;
+}
+
+.session-card__speaker {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--trama-muted);
+  margin-top: 4px;
+}
+
+.session-card__arrow {
+  width: 24px;
+  height: 24px;
+  color: var(--trama-terracotta);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: all var(--duration-mid) var(--ease-smooth);
+}
+
+.session-card:hover .session-card__arrow {
+  opacity: 0.7;
+  transform: translateX(0);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   9. FOOTER — Site-wide footer
+   ═══════════════════════════════════════════════════════════════ */
+
+.trama-footer {
+  padding: var(--space-2xl) 0;
+  border-top: 1px solid rgba(var(--rgb-burgundy), 0.08);
+  margin-top: var(--space-3xl);
+}
+
+.trama-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.trama-footer__text {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--trama-muted);
+  line-height: 2;
+}
+
+.dark-theme .trama-footer {
+  border-top-color: rgba(var(--rgb-cream), 0.06);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   10. TEXTURE OVERLAYS — Grain & vignette for atmospheric pages
+   ═══════════════════════════════════════════════════════════════ */
+
+.trama-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.3;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+}
+
+.dark-theme .trama-grain {
+  mix-blend-mode: screen;
+  opacity: 0.35;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   11. HERO SECTION — Used on the main landing page
+   ═══════════════════════════════════════════════════════════════ */
+
+.trama-hero {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-3xl) var(--space-lg);
+  overflow: hidden;
+}
+
+.trama-hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.trama-hero__canvas canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.trama-hero__content {
+  position: relative;
+  z-index: 10;
+}
+
+.trama-hero__tagline {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--trama-muted);
+  margin-top: var(--space-lg);
+}
+
+.dark-theme .trama-hero__tagline {
+  color: var(--trama-muted-lt);
+}
+
+.trama-hero__subtitle {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-style: italic;
+  font-size: var(--text-xl);
+  color: var(--trama-muted);
+  margin-top: var(--space-md);
+  max-width: 500px;
+}
+
+.dark-theme .trama-hero__subtitle {
+  color: var(--trama-muted-lt);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   12. DECORATIVE ELEMENTS — Lines, diamonds, dividers
+   ═══════════════════════════════════════════════════════════════ */
+
+.trama-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: var(--space-lg) 0;
+}
+
+.trama-divider__diamond {
+  width: 5px;
+  height: 5px;
+  background: var(--trama-gold);
+  opacity: 0.4;
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+.trama-divider__line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg,
+    rgba(var(--rgb-burgundy), 0.25),
+    transparent 80%
+  );
+}
+
+.dark-theme .trama-divider__line {
+  background: linear-gradient(90deg,
+    rgba(var(--rgb-gold), 0.25),
+    transparent 80%
+  );
+}
+
+/* Horizontal rule variant */
+.trama-rule {
+  width: 100%;
+  height: 2px;
+  border: none;
+  background: linear-gradient(90deg,
+    var(--trama-burgundy) 0%,
+    var(--trama-terracotta) 40%,
+    transparent 85%
+  );
+  opacity: 0.35;
+}
+
+.dark-theme .trama-rule {
+  background: linear-gradient(90deg,
+    var(--trama-gold) 0%,
+    rgba(var(--rgb-gold), 0.3) 40%,
+    transparent 85%
+  );
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   13. FLYER-SPECIFIC SHARED STYLES
+   These are the component styles used across individual
+   session flyers. Each flyer may override colors/backgrounds,
+   but the structural layout remains consistent.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Flyer container (600×780, the standard size) */
+.flyer {
+  width: 600px;
+  height: 780px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top identification strip */
+.flyer__strip {
+  position: relative;
+  z-index: 10;
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flyer__strip-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+}
+
+.flyer__strip-date {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Speaker block */
+.flyer__speaker {
+  position: relative;
+  z-index: 10;
+  padding: 13px 20px;
+}
+
+.flyer__speaker-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.flyer__speaker-name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 3px;
+  line-height: 1.1;
+}
+
+.flyer__speaker-role {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 3px;
+}
+
+/* Info grid (date + location) */
+.flyer__info {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.flyer__info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.flyer__info-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.flyer__info-label {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.flyer__info-value {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* Flyer footer bar */
+.flyer__footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 13px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flyer__footer-trama {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 6px;
+  opacity: 0.55;
+}
+
+.flyer__footer-info {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 1.8;
+  opacity: 0.4;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   14. UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+
+.mt-0  { margin-top: 0; }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mt-xl { margin-top: var(--space-xl); }
+
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   15. RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  :root {
+    --text-hero: 3.5rem;
+    --text-4xl: 2.5rem;
+    --text-3xl: 2rem;
+    --text-2xl: 1.5rem;
+  }
+
+  .trama-nav__links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: var(--trama-paper);
+    padding: var(--space-lg);
+    border-bottom: 1px solid rgba(var(--rgb-burgundy), 0.08);
+    gap: var(--space-lg);
+  }
+
+  .dark-theme .trama-nav__links {
+    background: var(--trama-bg-dark);
+  }
+
+  .trama-nav__links.is-open {
+    display: flex;
+  }
+
+  .trama-nav__toggle {
+    display: block;
+  }
+
+  .trama-hero {
+    min-height: 60vh;
+  }
+
+  .trama-logo--hero {
+    width: min(300px, 80vw);
+  }
+
+  .session-card {
+    grid-template-columns: 60px 1fr;
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .session-card__arrow {
+    display: none;
+  }
+
+  .trama-footer__inner {
+    flex-direction: column;
+    gap: var(--space-md);
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .trama-container {
+    padding: 0 var(--space-md);
+  }
+
+  .session-card {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .session-card__date {
+    text-align: left;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+  }
+
+  .session-card__day {
+    font-size: var(--text-xl);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   16. ANIMATIONS — Entrance effects for site pages
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes trama-fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes trama-fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.anim-fade-up {
+  animation: trama-fadeUp 0.8s var(--ease-smooth) both;
+}
+
+.anim-fade-in {
+  animation: trama-fadeIn 0.6s var(--ease-smooth) both;
+}
+
+/* Staggered delays */
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.2s; }
+.anim-delay-3 { animation-delay: 0.35s; }
+.anim-delay-4 { animation-delay: 0.5s; }
+.anim-delay-5 { animation-delay: 0.7s; }
