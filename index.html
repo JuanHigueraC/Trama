@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TRAMA — Sistema de conocimiento en ciencias de la complejidad para Abya Yala. Seminario permanente y mapeo de referentes, anclado en la UNAL.">
+  <title>TRAMA — Ciencias de la Complejidad en Abya Yala</title>
+  <link rel="stylesheet" href="assets/css/trama.css">
+
+  <style>
+    /* ══════════════════════════════════════════
+       BASE
+    ══════════════════════════════════════════ */
+    html, body {
+      margin: 0; padding: 0;
+      background: #0E0204;
+    }
+
+    body {
+      font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
+      color: #F0E8DC;
+      min-height: 100vh;
+    }
+
+    /* ── Full-page floating background network ── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .trama-grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.18;
+      mix-blend-mode: screen;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    }
+
+    /* ════════════════════════════════
+       NAV
+    ════════════════════════════════ */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      height: 62px;
+      background: rgba(14, 2, 4, 0.85);
+      border-bottom: 1px solid rgba(168, 58, 32, 0.14);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+
+    .nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Logo PNG in nav: white background png → invert to white on dark */
+    .nav-logo img {
+      height: 28px;
+      width: auto;
+      filter: brightness(0) invert(1);
+      opacity: 0.82;
+    }
+
+    .nav-links {
+      list-style: none;
+      margin: 0; padding: 0;
+      display: flex;
+      gap: 2.8rem;
+    }
+
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.54rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(240, 232, 220, 0.38);
+      text-decoration: none;
+      transition: color 180ms ease;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: rgba(240, 232, 220, 0.88);
+    }
+
+    /* ════════════════════════════════
+       HERO
+    ════════════════════════════════ */
+    .hero {
+      position: relative;
+      z-index: 10;
+      min-height: calc(100vh - 62px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      overflow: hidden;
+    }
+
+    /* Hero foreground network canvas */
+    .hero-canvas-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-canvas-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Warm glow behind the logo so the white-bg PNG renders nicely */
+    .hero-glow {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 62% 56% at 50% 46%,
+        rgba(248, 238, 222, 0.10) 0%,
+        rgba(184, 90, 40, 0.07) 32%,
+        rgba(106, 15, 15, 0.04) 58%,
+        transparent 78%
+      );
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Eyebrow ── */
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: rgba(201, 168, 76, 0.55);
+      margin-bottom: 2.2rem;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.15s forwards;
+    }
+
+    /* ── Logo wrap ── */
+    .hero-logo-wrap {
+      position: relative;
+      opacity: 0;
+      animation: fadeUp 1.1s ease 0.4s forwards;
+    }
+
+    /* Warm oval behind logo — makes white PNG background invisible against dark */
+    .hero-logo-wrap::before {
+      content: '';
+      position: absolute;
+      /* covers the white PNG background area */
+      inset: -8px -5px;
+      border-radius: 50%;
+      background: radial-gradient(
+        ellipse 78% 60% at 58% 50%,
+        rgba(248, 238, 222, 0.96) 0%,
+        rgba(244, 230, 210, 0.85) 30%,
+        rgba(230, 210, 185, 0.45) 55%,
+        transparent 72%
+      );
+      filter: blur(18px);
+      z-index: 0;
+    }
+
+    .hero-logo-wrap img {
+      position: relative;
+      z-index: 1;
+      width: clamp(300px, 44vw, 540px);
+      height: auto;
+      display: block;
+      filter:
+        drop-shadow(0 2px 32px rgba(168, 58, 32, 0.4))
+        drop-shadow(0 0 80px rgba(106, 15, 15, 0.25));
+    }
+
+    /* ── Subtitle ── */
+    .hero-subtitle {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.2vw, 1.3rem);
+      color: rgba(240, 232, 220, 0.5);
+      line-height: 1.6;
+      margin-top: 2rem;
+      max-width: 420px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.85s forwards;
+    }
+
+    /* ── Pill tags ── */
+    .hero-tags {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 1.05s forwards;
+    }
+
+    .hero-tags span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.48rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(201, 168, 76, 0.45);
+    }
+
+    .hero-tags-sep {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(168, 58, 32, 0.5);
+    }
+
+    /* ── Scroll hint ── */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      opacity: 0;
+      animation: fadeIn 1s ease 1.7s forwards;
+    }
+
+    .scroll-hint-bar {
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(to bottom, rgba(201,168,76,0.55), transparent);
+      animation: scrollPulse 2.4s ease-in-out infinite;
+    }
+
+    .scroll-hint span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.4rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: rgba(201, 168, 76, 0.28);
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.28; transform: scaleY(0.85); }
+      50%       { opacity: 0.75; transform: scaleY(1.1); }
+    }
+
+    /* ════════════════════════════════
+       PAGE CONTENT (above bg canvas)
+    ════════════════════════════════ */
+    .page-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Subtle warm gradient fade between hero and content */
+    .content-fade {
+      height: 2px;
+      background: linear-gradient(
+        90deg, transparent,
+        rgba(168, 58, 32, 0.32) 25%,
+        rgba(201, 168, 76, 0.18) 50%,
+        rgba(168, 58, 32, 0.32) 75%,
+        transparent
+      );
+    }
+
+    /* ════════════════════════════════
+       ABOUT SECTION
+    ════════════════════════════════ */
+    .about-section {
+      padding: 8rem 2rem 7rem;
+    }
+
+    .about-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .about-sidebar {
+      position: sticky;
+      top: 80px;
+    }
+
+    .about-big-num {
+      font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+      font-size: 8rem;
+      line-height: 0.9;
+      color: rgba(106, 15, 15, 0.2);
+      letter-spacing: -0.01em;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: #A83A20;
+      opacity: 0.75;
+      display: flex;
+      align-items: center;
+      gap: 0.7em;
+    }
+
+    .section-tag::before {
+      content: '';
+      display: block;
+      width: 20px; height: 1px;
+      background: #A83A20;
+      opacity: 0.5;
+    }
+
+    .about-heading {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 4.2vw, 3.2rem);
+      color: #F0E8DC;
+      line-height: 1.07;
+      letter-spacing: -0.025em;
+      margin-bottom: 2rem;
+    }
+
+    .about-heading em {
+      font-style: italic;
+      color: rgba(240, 232, 220, 0.38);
+    }
+
+    .about-body {
+      font-size: 1.02rem;
+      line-height: 1.8;
+      color: rgba(240, 232, 220, 0.58);
+      margin-bottom: 1.5rem;
+    }
+
+    .about-body strong {
+      color: rgba(240, 232, 220, 0.88);
+      font-weight: 500;
+    }
+
+    .about-quote {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1.08rem, 2vw, 1.3rem);
+      color: rgba(240, 232, 220, 0.52);
+      line-height: 1.65;
+      border-left: 2px solid rgba(168, 58, 32, 0.38);
+      padding: 1.2rem 0 1.2rem 1.8rem;
+      margin: 2.2rem 0;
+      position: relative;
+    }
+
+    .about-quote::before {
+      content: '';
+      position: absolute;
+      left: -1px; top: 0;
+      width: 2px; height: 28%;
+      background: #C9A84C;
+      opacity: 0.5;
+    }
+
+    .areas-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 3rem;
+      border-top: 1px solid rgba(240, 232, 220, 0.07);
+    }
+
+    .area-item {
+      padding: 1.3rem 0.8rem 1.3rem 0;
+      border-right: 1px solid rgba(240, 232, 220, 0.05);
+    }
+
+    .area-item:last-child { border-right: none; }
+
+    .area-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.47rem;
+      letter-spacing: 0.25em;
+      color: #A83A20;
+      opacity: 0.65;
+      margin-bottom: 0.5rem;
+    }
+
+    .area-label {
+      font-size: 0.8rem;
+      color: rgba(240, 232, 220, 0.42);
+      line-height: 1.55;
+    }
+
+    /* ════════════════════════════════
+       SPACES SECTION
+    ════════════════════════════════ */
+    .spaces-section {
+      padding: 6rem 2rem 9rem;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.3) 80%, transparent);
+    }
+
+    .spaces-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .spaces-head {
+      margin-bottom: 3.5rem;
+    }
+
+    .spaces-heading {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(1.7rem, 3.2vw, 2.5rem);
+      color: #F0E8DC;
+      letter-spacing: -0.02em;
+      margin-top: 0.7rem;
+    }
+
+    .cards-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.4rem;
+    }
+
+    .space-card {
+      display: block;
+      position: relative;
+      padding: 2.5rem 2.5rem 2.2rem;
+      border: 1px solid rgba(168, 58, 32, 0.16);
+      background: rgba(18, 4, 6, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      cursor: default;
+      transition: border-color 300ms ease, background 300ms ease, transform 280ms ease, box-shadow 300ms ease;
+    }
+
+    .space-card--link {
+      cursor: pointer;
+    }
+
+    .space-card--link:hover {
+      transform: translateY(-5px);
+      background: rgba(24, 6, 8, 0.75);
+      border-color: rgba(201, 168, 76, 0.28);
+      box-shadow:
+        0 16px 60px rgba(106, 15, 15, 0.32),
+        0 0 0 1px rgba(201, 168, 76, 0.06);
+    }
+
+    /* Corner bracket */
+    .card-corner {
+      position: absolute;
+      top: 0; right: 0;
+      width: 34px; height: 34px;
+      border-top: 1px solid rgba(201, 168, 76, 0.18);
+      border-right: 1px solid rgba(201, 168, 76, 0.18);
+      transition: width 280ms ease, height 280ms ease, border-color 280ms ease;
+    }
+
+    .space-card--link:hover .card-corner {
+      width: 54px; height: 54px;
+      border-color: rgba(201, 168, 76, 0.4);
+    }
+
+    /* Arrow */
+    .card-arrow {
+      position: absolute;
+      top: 2rem; right: 2rem;
+      width: 17px; height: 17px;
+      color: #C9A84C;
+      opacity: 0;
+      transform: translate(-5px, 5px);
+      transition: opacity 260ms ease, transform 260ms ease;
+    }
+
+    .space-card--link:hover .card-arrow {
+      opacity: 0.65;
+      transform: translate(0, 0);
+    }
+
+    .card-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.48rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #A83A20;
+      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 0.6em;
+      margin-bottom: 1.1rem;
+    }
+
+    .card-tag::before {
+      content: '';
+      display: inline-block;
+      width: 14px; height: 1px;
+      background: #A83A20;
+      opacity: 0.5;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 700;
+      font-size: clamp(1.5rem, 2.8vw, 2rem);
+      color: #F0E8DC;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .card-desc {
+      font-size: 0.87rem;
+      color: rgba(240, 232, 220, 0.46);
+      line-height: 1.72;
+    }
+
+    .card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 1.7rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.45rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border: 1px solid;
+    }
+
+    .badge-active {
+      color: #A83A20;
+      border-color: rgba(168, 58, 32, 0.35);
+      background: rgba(168, 58, 32, 0.06);
+    }
+
+    .badge-active::before {
+      content: '';
+      display: block;
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #A83A20;
+      animation: dot-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes dot-pulse {
+      0%,100% { opacity: 0.5; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.4); }
+    }
+
+    .badge-soon {
+      color: rgba(201, 168, 76, 0.45);
+      border-color: rgba(201, 168, 76, 0.18);
+    }
+
+    /* ════════════════════════════════
+       FOOTER
+    ════════════════════════════════ */
+    .site-footer {
+      position: relative;
+      z-index: 10;
+      padding: 4.5rem 2rem 3rem;
+      border-top: 1px solid rgba(168, 58, 32, 0.12);
+    }
+
+    .footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 3rem;
+    }
+
+    .footer-wordmark {
+      font-family: 'Bebas Neue', 'Arial Black', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 0.14em;
+      color: rgba(240, 232, 220, 0.1);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-caption {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 0.92rem;
+      color: rgba(240, 232, 220, 0.28);
+      line-height: 1.6;
+    }
+
+    .footer-right {
+      text-align: right;
+    }
+
+    .footer-name {
+      font-size: 0.82rem;
+      color: rgba(240, 232, 220, 0.5);
+      margin-bottom: 0.2rem;
+    }
+
+    .footer-email {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0.1em;
+      color: rgba(240, 232, 220, 0.28);
+      text-decoration: none;
+      transition: color 180ms ease;
+    }
+
+    .footer-email:hover { color: #C9A84C; }
+
+    .footer-socials {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 0.8rem;
+    }
+
+    .footer-socials a {
+      color: rgba(240, 232, 220, 0.25);
+      transition: color 180ms ease;
+      display: flex;
+    }
+
+    .footer-socials a:hover { color: #C9A84C; }
+
+    .footer-bottom {
+      max-width: 1120px;
+      margin: 2.5rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(240, 232, 220, 0.04);
+      text-align: center;
+    }
+
+    .footer-bottom p {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.42rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(240, 232, 220, 0.14);
+    }
+
+    /* ════════════════════════════════
+       ANIMATIONS
+    ════════════════════════════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.in { opacity: 1; transform: none; }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.22s; }
+    .delay-3 { transition-delay: 0.36s; }
+    .delay-4 { transition-delay: 0.5s; }
+
+    /* ════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════ */
+    @media (max-width: 860px) {
+      .about-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .about-sidebar { position: static; display: flex; align-items: center; gap: 1rem; }
+      .about-big-num { font-size: 5rem; margin-bottom: 0; }
+      .areas-grid { grid-template-columns: 1fr 1fr; }
+      .cards-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .hero { padding: 3.5rem 1.5rem 3rem; }
+      .hero-logo-wrap img { width: 88vw; }
+      .footer-inner { flex-direction: column; }
+      .footer-right { text-align: left; }
+      .footer-socials { justify-content: flex-start; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Ambient background network ── -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- ── Grain ── -->
+  <div class="trama-grain" aria-hidden="true"></div>
+
+  <!-- ══════════════════
+       NAV
+  ══════════════════ -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="TRAMA — Inicio">
+        <img src="assets/img/logo-trama.png" alt="TRAMA" height="28">
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Inicio</a></li>
+        <li><a href="seminario/index.html">Seminario</a></li>
+        <li><a href="mapeo/index.html">Mapeo</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════
+       HERO
+  ══════════════════ -->
+  <section class="hero" aria-label="Portada TRAMA">
+
+    <div class="hero-canvas-wrap">
+      <canvas id="hero-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="hero-glow" aria-hidden="true"></div>
+
+    <div class="hero-content">
+
+      <p class="hero-eyebrow">Seminario Permanente · UNAL · Bogotá</p>
+
+      <div class="hero-logo-wrap">
+        <img src="assets/img/logo-trama.png"
+             alt="TRAMA — Ciencias de la Complejidad en Abya Yala"
+             width="540">
+      </div>
+
+      <p class="hero-subtitle">
+        Un sistema de conocimiento situado<br>
+        para los sistemas complejos del sur
+      </p>
+
+      <div class="hero-tags">
+        <span>Investigación</span>
+        <div class="hero-tags-sep"></div>
+        <span>Pedagogía</span>
+        <div class="hero-tags-sep"></div>
+        <span>Abya Yala</span>
+      </div>
+
+    </div>
+
+    <div class="scroll-hint" aria-hidden="true">
+      <div class="scroll-hint-bar"></div>
+      <span>Explorar</span>
+    </div>
+
+  </section>
+
+
+  <!-- ══════════════════
+       MAIN CONTENT
+  ══════════════════ -->
+  <div class="page-content">
+
+    <div class="content-fade"></div>
+
+    <!-- ── QUÉ ES TRAMA ── -->
+    <section class="about-section" aria-labelledby="about-h">
+      <div class="about-inner">
+
+        <div class="about-sidebar">
+          <div class="about-big-num" aria-hidden="true">01</div>
+          <div class="section-tag">Qué es TRAMA</div>
+        </div>
+
+        <div>
+          <h2 id="about-h" class="about-heading reveal">
+            Un sistema de conocimiento<br>
+            <em>situado en el sur</em>
+          </h2>
+
+          <p class="about-body reveal delay-1">
+            TRAMA es un espacio que articula <strong>investigación y creación</strong>, publicación y acceso, mediación pedagógica, y apropiación social del conocimiento en ciencias de la complejidad — con foco en <strong>Abya Yala</strong>.
+          </p>
+
+          <blockquote class="about-quote reveal delay-2">
+            Nos interesa construir un campo situado: que piense los sistemas complejos desde y para Latinoamérica, que conecte tradiciones intelectuales diversas, y que haga ese conocimiento accesible y vivo.
+          </blockquote>
+
+          <p class="about-body reveal delay-3">
+            El nombre lo dice: una trama es a la vez un tejido, un patrón de conexiones, una red de relaciones. Las ciencias de la complejidad estudian precisamente eso — cómo emergen estructuras, comportamientos y sentidos a partir de la interacción de muchos elementos. TRAMA es donde ese estudio ocurre en castellano, desde el sur, con rigor y apertura.
+          </p>
+
+          <div class="areas-grid reveal delay-4">
+            <div class="area-item">
+              <div class="area-num">01</div>
+              <div class="area-label">Investigación<br>y creación</div>
+            </div>
+            <div class="area-item">
+              <div class="area-num">02</div>
+              <div class="area-label">Publicación<br>y acceso</div>
+            </div>
+            <div class="area-item">
+              <div class="area-num">03</div>
+              <div class="area-label">Mediación<br>pedagógica</div>
+            </div>
+            <div class="area-item">
+              <div class="area-num">04</div>
+              <div class="area-label">Divulgación y<br>apropiación social</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="content-fade"></div>
+
+    <!-- ── ESPACIOS ── -->
+    <section class="spaces-section" aria-labelledby="spaces-h">
+      <div class="spaces-inner">
+
+        <div class="spaces-head reveal">
+          <div class="section-tag">02 · Espacios activos</div>
+          <h2 id="spaces-h" class="spaces-heading">Dónde empieza la trama</h2>
+        </div>
+
+        <div class="cards-row">
+
+          <!-- Seminario -->
+          <a href="seminario/index.html"
+             class="space-card space-card--link reveal delay-1"
+             aria-label="Ir al Seminario de Complejidad">
+            <div class="card-corner" aria-hidden="true"></div>
+            <svg class="card-arrow" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M3 15L15 3M15 3H7M15 3v8"/>
+            </svg>
+            <div class="card-tag">Seminario permanente</div>
+            <h3 class="card-title">Seminario de<br>Complejidad</h3>
+            <p class="card-desc">Sesiones quincenales abiertas. Exploramos herramientas y marcos teóricos de las ciencias de la complejidad aplicados a fenómenos del sur global. Miércoles, 6 pm · Sala de Música, Biblioteca Central UNAL.</p>
+            <div class="card-badge badge-active">Activo</div>
+          </a>
+
+          <!-- Mapeo -->
+          <div class="space-card reveal delay-2"
+               aria-label="Mapeo de Referentes — Próximamente">
+            <div class="card-corner" aria-hidden="true"></div>
+            <div class="card-tag">Referentes e ideas</div>
+            <h3 class="card-title">Mapeo de<br>Referentes</h3>
+            <p class="card-desc">Un atlas vivo de referentes, tradiciones intelectuales y conceptos que construyen las ciencias de la complejidad en Abya Yala. Red de ideas y conexiones — en construcción.</p>
+            <div class="card-badge badge-soon">Próximamente</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="content-fade"></div>
+
+  </div>
+
+
+  <!-- ══════════════════
+       FOOTER
+  ══════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-wordmark" aria-hidden="true">TRAMA</div>
+        <p class="footer-caption">Ciencias de la Complejidad<br>en Abya Yala</p>
+      </div>
+      <div class="footer-right">
+        <p class="footer-name">Juan Camilo Higuera Calderón</p>
+        <a href="mailto:juancahica@gmail.com" class="footer-email">juancahica@gmail.com</a>
+        <div class="footer-socials">
+          <a href="https://www.linkedin.com/in/jchiguerac/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://github.com/JuanHigueraC" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>TRAMA · Seminario Permanente de Ciencias de la Complejidad · Universidad Nacional de Colombia</p>
+    </div>
+  </footer>
+
+
+  <!-- ══════════════════
+       SCRIPTS
+  ══════════════════ -->
+  <script src="assets/js/red-animada.js"></script>
+  <script>
+    // ─────────────────────────────────────────
+    // 1. FULL-PAGE AMBIENT BACKGROUND NETWORK
+    //    (fixed behind everything, slow drift)
+    // ─────────────────────────────────────────
+    (function () {
+      const canvas = document.getElementById('bg-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      function setSize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      setSize();
+
+      const COLORS = [
+        [106, 15, 15],    // burgundy
+        [168, 58, 32],    // terracotta
+        [201, 168, 76],   // gold
+      ];
+
+      let seed = 77;
+      function rng() {
+        seed = (seed * 16807) % 2147483647;
+        return (seed - 1) / 2147483646;
+      }
+
+      const N = 60;
+      let pts = [];
+
+      function init() {
+        seed = 77;
+        pts = [];
+        for (let i = 0; i < N; i++) {
+          pts.push({
+            x:  rng() * canvas.width,
+            y:  rng() * canvas.height,
+            vx: (rng() - 0.5) * 0.3,
+            vy: (rng() - 0.5) * 0.3,
+            r:  1 + rng() * 2.2,
+            c:  Math.floor(rng() * COLORS.length),
+            hub: rng() < 0.14,
+          });
+        }
+      }
+      init();
+
+      const MAX = 210;
+
+      function frame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // move
+        for (const p of pts) {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < -30) p.x = canvas.width + 30;
+          if (p.x > canvas.width + 30) p.x = -30;
+          if (p.y < -30) p.y = canvas.height + 30;
+          if (p.y > canvas.height + 30) p.y = -30;
+        }
+
+        // edges
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const a = pts[i], b = pts[j];
+            const dx = a.x - b.x, dy = a.y - b.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d < MAX) {
+              const alpha = (1 - d / MAX) * 0.11;
+              const [r,g,b2] = COLORS[a.c];
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle = `rgba(${r},${g},${b2},${alpha})`;
+              ctx.lineWidth = 0.65;
+              ctx.stroke();
+            }
+          }
+        }
+
+        // nodes
+        for (const p of pts) {
+          const [r,g,b2] = COLORS[p.c];
+          const alpha = p.hub ? 0.3 : 0.14;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${r},${g},${b2},${alpha})`;
+          ctx.fill();
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      frame();
+
+      let resizeT;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeT);
+        resizeT = setTimeout(() => { setSize(); init(); }, 200);
+      }, { passive: true });
+    })();
+
+    // ─────────────────────────────────────────
+    // 2. HERO FOREGROUND NETWORK (brighter)
+    // ─────────────────────────────────────────
+    tramaNetwork('hero-canvas', {
+      palette:   'dark',
+      density:   88,
+      maxDist:   128,
+      hubChance: 0.13,
+      speed:     0.003,
+    });
+
+    // ─────────────────────────────────────────
+    // 3. SCROLL REVEAL
+    // ─────────────────────────────────────────
+    const reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        entries => entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        }),
+        { threshold: 0.1 }
+      );
+      reveals.forEach(el => io.observe(el));
+    } else {
+      reveals.forEach(el => el.classList.add('in'));
+    }
+  </script>
+
+</body>
+</html>
