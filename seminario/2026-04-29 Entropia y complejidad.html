@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAMA — Entropía y complejidad</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --burgundy:    #6A0F0F;
+    --deep-wine:   #0E0404;
+    --wine:        #7A1830;
+    --terracotta:  #A83A20;
+    --rust:        #B85A28;
+    --gold:        #C9A84C;
+    --amber:       #D09438;
+    --cream:       #F0E8DC;
+    --charcoal:    #1E0E0E;
+    --muted:       #7A6A58;
+    --muted-lt:    #9A8870;
+  }
+
+  body {
+    background: #7A726A;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .flyer {
+    width: 600px;
+    height: 780px;
+    background: var(--deep-wine);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 40px 120px rgba(0,0,0,0.65),
+      0 6px 24px rgba(0,0,0,0.30),
+      inset 0 0 0 1px rgba(201,168,76,0.08);
+  }
+
+  /* ── CANVAS FULL-BLEED ── */
+  #entropyBg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 600px; height: 780px;
+    z-index: 1;
+  }
+
+  /* ── LAYERED OVERLAY: bottom-heavy darkness ── */
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg,
+        rgba(14,4,4,0.28) 0%,
+        rgba(14,4,4,0.18) 18%,
+        rgba(14,4,4,0.42) 46%,
+        rgba(14,4,4,0.72) 74%,
+        rgba(14,4,4,0.85) 100%
+      );
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* ── GRAIN ── */
+  .grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    opacity: 0.50;
+    z-index: 25;
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  /* ── GHOST LETTER S (entropía) ── */
+  .ghost-letter {
+    position: absolute;
+    z-index: 3;
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: 560px;
+    line-height: 1;
+    color: var(--terracotta);
+    opacity: 0.045;
+    top: 60px;
+    left: -55px;
+    user-select: none;
+    pointer-events: none;
+    letter-spacing: -30px;
+  }
+
+  /* ── TOP STRIP ── */
+  .top-strip {
+    position: relative;
+    z-index: 10;
+    padding: 10px 32px;
+    border-bottom: 1px solid rgba(201,168,76,0.14);
+    background: rgba(10,2,2,0.55);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .seminario-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3.5px;
+    color: var(--cream);
+    text-transform: uppercase;
+    opacity: 0.70;
+  }
+
+  .date-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0.70;
+  }
+
+  /* ── TRAMA LOGO ── */
+  .logo-area {
+    position: relative;
+    z-index: 10;
+    padding: 16px 36px 0;
+  }
+
+  .trama-logo-wrap {
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+  }
+
+  .trama-ghost {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 12px;
+    color: var(--terracotta);
+    opacity: 0.09;
+    position: absolute;
+    top: 5px; left: 5px;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .trama-solid {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 12px;
+    color: var(--cream);
+    position: relative;
+    z-index: 2;
+    opacity: 0.88;
+  }
+
+  .logo-rule {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg,
+      var(--gold) 0%,
+      rgba(201,168,76,0.35) 40%,
+      transparent 80%);
+    margin-top: 5px;
+  }
+
+  /* ── MAIN CONTENT BLOCK ── */
+  .content-block {
+    position: relative;
+    z-index: 10;
+    padding: 0 38px;
+    margin-top: 92px;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.65;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 1px;
+    background: var(--gold);
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .main-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 78px;
+    line-height: 0.93;
+    color: var(--cream);
+    letter-spacing: -1.5px;
+    opacity: 0.95;
+  }
+
+  .main-title .accent {
+    color: var(--amber);
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  /* diamond + line divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0 13px;
+  }
+
+  .div-diamond {
+    width: 5px; height: 5px;
+    background: var(--gold);
+    opacity: 0.45;
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  .div-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201,168,76,0.35), transparent);
+  }
+
+  .subtitle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cream);
+    opacity: 0.42;
+  }
+
+  /* ── FORMULA BAR ── */
+  .formula-bar {
+    position: relative;
+    z-index: 10;
+    margin: 20px 38px 0;
+    padding: 12px 18px;
+    border: 1px solid rgba(201,168,76,0.12);
+    border-left: 3px solid rgba(201,168,76,0.30);
+    background: rgba(201,168,76,0.035);
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .formula-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .formula-item + .formula-item {
+    border-left: 1px solid rgba(201,168,76,0.14);
+    padding-left: 18px;
+    margin-left: 2px;
+  }
+
+  .formula-eq {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    color: var(--gold);
+    opacity: 0.62;
+    letter-spacing: 1px;
+  }
+
+  .formula-caption {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 300;
+    color: var(--muted-lt);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    opacity: 0.80;
+  }
+
+  /* ── SPEAKER BLOCK — gold accent instead of terracotta ── */
+  .speaker-block {
+    position: relative;
+    z-index: 10;
+    margin: 18px 38px 0;
+    padding: 12px 18px;
+    background: rgba(201,168,76,0.042);
+    border-left: 3px solid rgba(201,168,76,0.38);
+  }
+
+  .speaker-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 3.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    opacity: 0.70;
+  }
+
+  .speaker-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--cream);
+    line-height: 1.1;
+    opacity: 0.88;
+  }
+
+  .speaker-role {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--muted-lt);
+    margin-top: 2px;
+    opacity: 0.85;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── INFO SECTION ── */
+  .info-section {
+    position: relative;
+    z-index: 10;
+    padding: 14px 38px;
+    margin-top: 16px;
+    border-top: 1px solid rgba(201,168,76,0.10);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .info-icon {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+    color: var(--gold);
+    opacity: 0.50;
+    margin-top: 1px;
+  }
+
+  .info-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 7px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    opacity: 0.62;
+  }
+
+  .info-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cream);
+    line-height: 1.5;
+    opacity: 0.80;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 10;
+    border-top: 1px solid rgba(201,168,76,0.14);
+    background: rgba(8,2,2,0.80);
+    backdrop-filter: blur(8px);
+    padding: 12px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-trama {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 6px;
+    color: var(--cream);
+    opacity: 0.40;
+  }
+
+  .footer-info {
+    font-family: 'Space Mono', monospace;
+    font-size: 7px;
+    letter-spacing: 2px;
+    color: var(--cream);
+    opacity: 0.32;
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<div class="flyer">
+
+  <canvas id="entropyBg" width="600" height="780"></canvas>
+  <div class="overlay"></div>
+  <div class="grain"></div>
+
+  <!-- Giant ghost S -->
+  <div class="ghost-letter" aria-hidden="true">S</div>
+
+  <!-- TOP STRIP -->
+  <div class="top-strip">
+    <span class="seminario-badge">✦ Seminario Ciencias de la Complejidad</span>
+    <span class="date-tag">Mayo 2026</span>
+  </div>
+
+  <!-- TRAMA LOGO -->
+  <div class="logo-area">
+    <div class="trama-logo-wrap">
+      <span class="trama-ghost" aria-hidden="true">TRAMA</span>
+      <span class="trama-solid">TRAMA</span>
+    </div>
+    <div class="logo-rule"></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content-block">
+    <div class="eyebrow">sesión · termodinámica e información</div>
+    <h1 class="main-title">
+      Entropía<br>y <span class="accent">complejidad</span>
+    </h1>
+    <div class="divider">
+      <div class="div-diamond"></div>
+      <div class="div-line"></div>
+    </div>
+    <p class="subtitle">Las múltiples caras de la entropía</p>
+  </div>
+
+  <!-- FORMULA BAR -->
+  <div class="formula-bar">
+    <div class="formula-item">
+      <span class="formula-eq">S = k&#x2082; ln &#x03A9;</span>
+      <span class="formula-caption">Boltzmann · Termodinámica</span>
+    </div>
+    <div class="formula-item">
+      <span class="formula-eq">H = &#x2212;&#x2211; p&#x1D62; log p&#x1D62;</span>
+      <span class="formula-caption">Shannon · Información</span>
+    </div>
+  </div>
+
+  <!-- SPEAKER -->
+  <div class="speaker-block">
+    <div class="speaker-label">Ponente</div>
+    <div class="speaker-name">Por confirmar</div>
+    <div class="speaker-role">Ciencias de la Complejidad · UNAL</div>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-section">
+    <div class="info-item">
+      <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <div class="info-text">
+        <div class="info-label">Fecha</div>
+        <div class="info-value">Miércoles · Mayo 2026<br>6:00 – 8:00 p.m.</div>
+      </div>
+    </div>
+    <div class="info-item">
+      <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      <div class="info-text">
+        <div class="info-label">Lugar</div>
+        <div class="info-value">Sala de Música<br>Biblioteca Central · UNAL Bogotá</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="footer-trama">TRAMA</span>
+    <span class="footer-info">Seminario permanente<br>Ciencias de la Complejidad · UNAL</span>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// ENTROPY LATTICE — Crystal order → thermal disorder
+//
+// Left column: perfect gold lattice (low entropy, S≈0)
+//   • dots on regular grid
+//   • small synchronized vibrations (thermal motion, kT → 0)
+//   • gold crystal bonds connecting neighbors
+//
+// Middle columns: transition zone (S increasing)
+//   • lattice begins to deform
+//   • bonds thin out and disappear
+//   • colors shift amber → terracotta
+//
+// Right zone: disordered gas (high entropy, S → max)
+//   • dots scattered at random positions
+//   • large erratic Brownian motion
+//   • no bonds, low opacity, fading into darkness
+// ══════════════════════════════════════════════════════════════
+
+const canvas = document.getElementById('entropyBg');
+const ctx    = canvas.getContext('2d');
+const W = 600, H = 780;
+
+// ── Deterministic LCG seeded random ──
+function makeLCG(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = Math.imul(1664525, s) + 1013904223 >>> 0;
+    return s / 0xFFFFFFFF;
+  };
+}
+
+const COLS = 25, ROWS = 33;
+const cW   = W / COLS;          // ~24px per cell
+const cH   = H / ROWS;          // ~23.6px per cell
+
+// ── Build dots ──
+const dots = [];
+const rng  = makeLCG(42);
+
+for (let row = 0; row < ROWS; row++) {
+  for (let col = 0; col < COLS; col++) {
+    // Entropy gradient: diagonal from top-left (0) to bottom-right (1)
+    // Emphasise horizontal spread (entropy revealed left→right)
+    const nx = col / (COLS - 1);
+    const ny = row / (ROWS - 1);
+    const entropy = Math.pow(nx * 0.62 + ny * 0.38, 1.15);
+
+    // Grid (crystalline) base position — slight honeycomb offset on odd rows
+    const hexOff = (row % 2 === 1) ? cW * 0.5 : 0;
+    const bx = cW * 0.5 + col * cW + hexOff;
+    const by = cH * 0.5 + row * cH;
+
+    // Pre-computed random scatter destination (used in disordered zone)
+    const r1 = rng(), r2 = rng();
+    const scatterX = (r1 - 0.5) * cW * 3.2;
+    const scatterY = (r2 - 0.5) * cH * 3.2;
+
+    // Animation phase parameters
+    const phase  = rng() * Math.PI * 2;
+    const freqX  = 0.5 + rng() * 0.7;
+    const freqY  = 0.5 + rng() * 0.7;
+
+    // Base radius varies with zone
+    const baseR  = entropy < 0.30
+      ? 1.7 + rng() * 0.8                // crisp crystal dots
+      : entropy < 0.62
+        ? 1.2 + rng() * 1.2              // transition
+        : 0.8 + rng() * 1.6;             // scattered, variable
+
+    const colorR = rng();                 // used for color selection
+
+    dots.push({ col, row, bx, by, scatterX, scatterY,
+                entropy, phase, freqX, freqY, baseR, colorR });
+  }
+}
+
+// ── Crystal bonds (only ordered zone) ──
+const bonds = [];
+for (let i = 0; i < dots.length; i++) {
+  const d = dots[i];
+  if (d.entropy > 0.44) continue;
+
+  // Right neighbor
+  const right = dots.find(n => n.col === d.col + 1 && n.row === d.row);
+  // Down neighbor
+  const down  = dots.find(n => n.col === d.col && n.row === d.row + 1);
+  // Down-right (for hexagonal flavour on odd rows)
+  const diagR = dots.find(n =>
+    n.col === d.col + (d.row % 2 === 1 ? 1 : 0) &&
+    n.row === d.row + 1
+  );
+
+  for (const nb of [right, down, diagR]) {
+    if (nb && nb.entropy < 0.44) {
+      bonds.push({
+        a: i,
+        b: dots.indexOf(nb),
+        avgE: (d.entropy + nb.entropy) / 2
+      });
+    }
+  }
+}
+
+// ── Color palettes ──
+const GOLD  = [201, 168,  76];
+const AMBER = [212, 148,  56];
+const TERRA = [168,  58,  32];
+const RUST  = [185,  90,  40];
+const CREAM = [240, 232, 220];
+
+function rgba([r,g,b], a) { return `rgba(${r},${g},${b},${a.toFixed(3)})`; }
+
+// ── Color interpolation for transition zone ──
+function lerpColor(ca, cb, t) {
+  return [
+    ca[0] + (cb[0]-ca[0])*t,
+    ca[1] + (cb[1]-ca[1])*t,
+    ca[2] + (cb[2]-ca[2])*t,
+  ];
+}
+
+// ── Main draw loop ──
+let t = 0;
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  t += 0.0055;
+
+  // Compute live positions
+  const pos = dots.map(d => {
+    const e = d.entropy;
+
+    // Vibration amplitude: tiny in crystal zone, large in disordered zone
+    let ampX, ampY;
+    if (e < 0.32) {
+      // Crystal: gentle, slightly coherent thermal vibration
+      ampX = 0.6 + e * 3.5;
+      ampY = 0.6 + e * 3.5;
+    } else if (e < 0.62) {
+      // Transition: growing anharmonic vibrations
+      const tf = (e - 0.32) / 0.30;
+      ampX = 1.7 + tf * 12;
+      ampY = 1.7 + tf * 12;
+    } else {
+      // Disordered: large Brownian-like erratic motion
+      const df = (e - 0.62) / 0.38;
+      ampX = 16 + df * 14;
+      ampY = 16 + df * 14;
+    }
+
+    const ox = Math.sin(t * d.freqX + d.phase)          * ampX;
+    const oy = Math.cos(t * d.freqY + d.phase * 1.37)   * ampY;
+
+    // In the disordered zone, gradually shift toward the random scatter destination
+    const scatterMix = Math.max(0, (e - 0.38) / 0.62);
+    const x = d.bx + ox + d.scatterX * scatterMix * 0.55;
+    const y = d.by + oy + d.scatterY * scatterMix * 0.55;
+
+    return { x, y };
+  });
+
+  // ── Draw crystal bonds ──
+  for (const bond of bonds) {
+    const pa = pos[bond.a];
+    const pb = pos[bond.b];
+    const e  = bond.avgE;
+
+    // Bond fades out as entropy increases
+    const alpha = Math.max(0, (0.44 - e) / 0.44) * 0.65;
+    const lw    = 0.4 + (1 - e / 0.44) * 0.9;
+
+    ctx.beginPath();
+    ctx.moveTo(pa.x, pa.y);
+    ctx.lineTo(pb.x, pb.y);
+    ctx.strokeStyle = rgba(GOLD, alpha * 0.55);
+    ctx.lineWidth   = lw;
+    ctx.stroke();
+  }
+
+  // ── Draw dots ──
+  for (let i = 0; i < dots.length; i++) {
+    const d = dots[i];
+    const p = pos[i];
+    const e = d.entropy;
+
+    // Clip dots that escaped far off-canvas
+    if (p.x < -60 || p.x > W+60 || p.y < -60 || p.y > H+60) continue;
+
+    // Determine color and opacity by entropy zone
+    let color, alpha;
+
+    if (e < 0.28) {
+      // Pure crystal zone — gold, high opacity
+      color = d.colorR < 0.55 ? GOLD : CREAM;
+      alpha = 0.70 - e * 0.60;
+    } else if (e < 0.55) {
+      // Transition — blend gold→amber→terracotta
+      const tf = (e - 0.28) / 0.27;
+      color = d.colorR < 0.5
+        ? lerpColor(GOLD,  AMBER,  tf)
+        : lerpColor(AMBER, TERRA, tf);
+      alpha = 0.52 - tf * 0.22;
+    } else {
+      // Disordered — terracotta/rust, fading
+      const df = (e - 0.55) / 0.45;
+      color = d.colorR < 0.5 ? TERRA : RUST;
+      alpha = Math.max(0.04, 0.30 - df * 0.24);
+    }
+
+    // Halo glow for ordered dots
+    if (e < 0.22) {
+      const gr = d.baseR * 5.5;
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, gr);
+      grd.addColorStop(0, rgba(GOLD, 0.11));
+      grd.addColorStop(1, rgba(GOLD, 0.0));
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, gr, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+    }
+
+    // Core dot
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, d.baseR, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(color, alpha);
+    ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
