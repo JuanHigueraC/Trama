@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRAMA — Seminario permanente</title>
+  <meta name="description" content="Catálogo de flyers del Seminario Permanente de Ciencias de la Complejidad en TRAMA." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --wine-deepest:  #120304;
+      --wine-deep:     #1D0407;
+      --wine-mid:      #2C0609;
+      --wine-bright:   #5C1015;
+      --wine-glow:     #8B1A1A;
+      --terra:         #C8582A;
+      --terra-lt:      #D4784A;
+      --gold:          #D4A843;
+      --gold-lt:       #E0C06A;
+      --cream:         #F5EDE0;
+      --cream-92:      rgba(245,237,224,0.92);
+      --cream-80:      rgba(245,237,224,0.80);
+      --cream-62:      rgba(245,237,224,0.62);
+      --cream-38:      rgba(245,237,224,0.38);
+      --cream-18:      rgba(245,237,224,0.18);
+      --cream-08:      rgba(245,237,224,0.08);
+      --shadow-deep:   0 34px 100px rgba(0, 0, 0, 0.38);
+      --flyer-w:       600px;
+      --flyer-h:       780px;
+      --scale:         0.84;
+    }
+
+    html { font-size: 18px; scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--cream);
+      background:
+        radial-gradient(ellipse 85% 60% at 10% 0%, rgba(92,16,21,0.72) 0%, transparent 52%),
+        radial-gradient(ellipse 72% 48% at 92% 22%, rgba(72,10,14,0.55) 0%, transparent 50%),
+        radial-gradient(ellipse 82% 45% at 50% 100%, rgba(60,8,12,0.48) 0%, transparent 55%),
+        linear-gradient(180deg, #180306 0%, #120304 100%);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .grain {
+      position: fixed; inset: 0; pointer-events: none;
+      opacity: 0.12; mix-blend-mode: screen; z-index: 2;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    }
+
+    .page { position: relative; z-index: 10; min-height: 100vh; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+      background: rgba(18, 3, 4, 0.82);
+      border-bottom: 1px solid rgba(200, 88, 42, 0.15);
+    }
+
+    .topbar__inner {
+      max-width: 1480px; margin: 0 auto;
+      padding: 0.85rem 1.6rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1.2rem;
+    }
+
+    .brand { display: flex; align-items: baseline; gap: 0.9rem; min-width: max-content; }
+
+    .brand__word {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.22em;
+      color: var(--cream-92); line-height: 1; text-decoration: none;
+    }
+
+    .brand__sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.52rem; letter-spacing: 0.26em;
+      text-transform: uppercase; color: rgba(212,168,67,0.60); white-space: nowrap;
+    }
+
+    .topbar__link {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.6rem 1rem; border-radius: 999px;
+      border: 1px solid rgba(245,237,224,0.10);
+      background: rgba(245,237,224,0.03);
+      color: var(--cream-62);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.50rem; letter-spacing: 0.22em; text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, background 180ms ease;
+    }
+
+    .topbar__link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.24); color: var(--cream);
+      background: rgba(212,168,67,0.05);
+    }
+
+    /* ── CATALOG HEADER ── */
+    .catalog-header {
+      padding: 2.8rem 1.6rem 0;
+      text-align: center;
+    }
+
+    .catalog-header__eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.52rem; letter-spacing: 0.38em; text-transform: uppercase;
+      color: rgba(212,168,67,0.55); margin-bottom: 0.9rem;
+    }
+
+    .catalog-header__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      font-weight: 700; line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--cream);
+    }
+
+    .catalog-header__title em {
+      font-style: italic; color: rgba(245,237,224,0.45);
+    }
+
+    /* ── INFO BOX ── */
+    .info-box {
+      display: flex;
+      justify-content: center;
+      padding: 1.4rem 1.6rem 0;
+    }
+
+    .info-box__inner {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      padding: 0.72rem 1.5rem;
+      border: 1px solid rgba(200, 88, 42, 0.28);
+      background: rgba(200, 88, 42, 0.07);
+      border-radius: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      row-gap: 0.3rem;
+    }
+
+    .info-box__item {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--cream-80);
+      padding: 0 0.8rem;
+    }
+
+    .info-box__item--hl {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .info-box__dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(200, 88, 42, 0.55);
+      flex-shrink: 0;
+    }
+
+    /* ── TIMELINE ── */
+    .timeline-wrap {
+      position: sticky; top: 57px; z-index: 90;
+      padding: 1.6rem 1.6rem 1.2rem;
+      background: linear-gradient(180deg, rgba(18,3,4,0.92) 0%, rgba(18,3,4,0.80) 100%);
+      border-bottom: 1px solid rgba(245,237,224,0.07);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    }
+
+    .timeline {
+      max-width: 1480px; margin: 0 auto;
+      display: flex; justify-content: center;
+      gap: 1rem; overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .timeline::-webkit-scrollbar { display: none; }
+
+    .timeline__item {
+      min-width: 200px;
+      border: 1px solid rgba(245,237,224,0.09);
+      background: rgba(245,237,224,0.03);
+      color: var(--cream-62);
+      border-radius: 16px;
+      padding: 1.1rem 1.4rem 1.0rem;
+      cursor: pointer;
+      transition: transform 200ms ease, border-color 200ms ease, color 200ms ease, background 200ms ease, box-shadow 200ms ease;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .timeline__item:hover, .timeline__item:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(212,168,67,0.28); color: var(--cream-92); outline: none;
+    }
+
+    .timeline__item.is-active {
+      border-color: rgba(212,168,67,0.42); color: var(--cream);
+      background: linear-gradient(160deg, rgba(212,168,67,0.12), rgba(245,237,224,0.03));
+      box-shadow: 0 10px 32px rgba(0,0,0,0.22), 0 0 0 1px rgba(212,168,67,0.08);
+      transform: translateY(-2px);
+    }
+
+    .timeline__date {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.55rem; letter-spacing: 0.12em;
+      color: var(--gold); line-height: 1; margin-bottom: 0.45rem;
+    }
+
+    .timeline__item.is-active .timeline__date { color: var(--gold-lt); }
+
+    .timeline__title {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.46rem; letter-spacing: 0.16em;
+      text-transform: uppercase; line-height: 1.55;
+      color: rgba(245,237,224,0.50); max-width: 22ch; margin: 0 auto;
+    }
+
+    .timeline__item.is-active .timeline__title { color: rgba(245,237,224,0.72); }
+
+    /* ── CATALOG ── */
+    .catalog { padding: 2rem 0 5rem; }
+
+    .catalog__inner { position: relative; max-width: 100%; }
+
+    .catalog__controls {
+      max-width: 1480px; margin: 0 auto 1.2rem;
+      padding: 0 1.6rem;
+      display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem;
+    }
+
+    .catalog__buttons { display: flex; gap: 0.5rem; }
+
+    .catalog__button {
+      appearance: none;
+      border: 1px solid rgba(245,237,224,0.09);
+      background: rgba(245,237,224,0.03);
+      color: var(--cream-62); width: 40px; height: 40px;
+      border-radius: 50%; cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, background 180ms ease;
+      display: grid; place-items: center;
+    }
+
+    .catalog__button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.25);
+      background: rgba(212,168,67,0.06); color: var(--cream);
+    }
+
+    /* ── MOBILE SCROLLER (default) ── */
+    .catalog__scroller {
+      max-width: 100%;
+      display: grid; grid-auto-flow: column;
+      grid-auto-columns: calc(var(--flyer-w) * var(--scale) + 32px);
+      gap: 2rem;
+      overflow-x: auto; overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      padding: 0.5rem 2rem 1.5rem;
+      scrollbar-width: none;
+    }
+
+    .catalog__scroller::-webkit-scrollbar { display: none; }
+
+    /* ── CARD ── */
+    .seminar-card {
+      scroll-snap-align: center;
+      border: 1px solid rgba(245,237,224,0.07);
+      background: rgba(18,3,4,0.45);
+      box-shadow: var(--shadow-deep);
+      border-radius: 24px; padding: 0.85rem;
+      transition:
+        transform 480ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 480ms ease,
+        box-shadow 480ms ease,
+        opacity 480ms ease,
+        filter 480ms ease;
+      display: flex; flex-direction: column; gap: 0.75rem;
+    }
+
+    /* Mobile active state */
+    .seminar-card.is-active {
+      transform: translateY(-6px);
+      border-color: rgba(212,168,67,0.22);
+      box-shadow: 0 44px 100px rgba(0,0,0,0.46), 0 0 0 1px rgba(212,168,67,0.07);
+    }
+
+    .seminar-card__preview {
+      position: relative; border-radius: 16px; overflow: hidden;
+      border: 1px solid rgba(245,237,224,0.10);
+      background: #0d0708;
+      width: calc(var(--flyer-w) * var(--scale));
+      height: calc(var(--flyer-h) * var(--scale));
+      box-shadow: 0 16px 40px rgba(0,0,0,0.32);
+      order: 1;
+    }
+
+    .seminar-card__preview::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(180deg, transparent 60%, rgba(18,3,4,0.08) 100%);
+    }
+
+    .seminar-card__iframe {
+      position: absolute; inset: 0;
+      width: var(--flyer-w); height: var(--flyer-h);
+      border: 0;
+      transform: scale(var(--scale)); transform-origin: top left;
+      background: #0d0708;
+    }
+
+    .seminar-card__meta {
+      order: 2;
+      padding: 0.1rem 0.4rem 0.2rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+
+    .seminar-card__date {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; letter-spacing: 0.10em;
+      color: var(--gold); line-height: 1;
+    }
+
+    .seminar-card__title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.46rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(245,237,224,0.46); line-height: 1.6;
+      text-align: right; max-width: 24ch;
+    }
+
+    .seminar-card__footer {
+      order: 3;
+      display: flex; justify-content: flex-end;
+      padding: 0 0.4rem 0.1rem;
+    }
+
+    .seminar-card__link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 0.9rem; border-radius: 999px;
+      border: 1px solid rgba(245,237,224,0.10);
+      background: rgba(245,237,224,0.03);
+      color: var(--cream-62);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.48rem; letter-spacing: 0.20em; text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .seminar-card__link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.26);
+      background: rgba(212,168,67,0.06); color: var(--cream);
+    }
+
+    /* ── FOOTER NOTE ── */
+    .footer-note {
+      max-width: 1480px; margin: 0 auto; padding: 0 1.6rem 2.4rem;
+      font-family: 'Space Mono', monospace; font-size: 0.44rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(245,237,224,0.14); text-align: center;
+    }
+
+    /* ════════════════════════════════════════
+       DESKTOP FOCAL CAROUSEL  (≥ 760 px)
+    ════════════════════════════════════════ */
+    @media (min-width: 760px) {
+
+      /* Scroller becomes a positioned stage */
+      .catalog__scroller {
+        display: block;
+        position: relative;
+        overflow: hidden;
+        /* tall enough for the active card + breathing room */
+        height: calc(var(--flyer-h) * var(--scale) + 180px);
+        padding: 0;
+        scroll-snap-type: none;
+        grid-auto-flow: unset;
+        grid-auto-columns: unset;
+        gap: unset;
+      }
+
+      /* All cards: absolute, default = invisible / zoomed-out */
+      .seminar-card {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: calc(var(--flyer-w) * var(--scale) + 32px);
+        /* default hidden state — tiny and transparent */
+        transform: translateX(-50%) translateY(-50%) scale(0.55);
+        opacity: 0;
+        pointer-events: none;
+        filter: grayscale(1);
+        z-index: 1;
+        scroll-snap-align: none;
+        /* override mobile translateY(-6px) from is-active */
+      }
+
+      /* Override: is-active does NOT add translateY on desktop
+         (pos-center owns the transform) */
+      .seminar-card.is-active {
+        transform: translateX(-50%) translateY(-50%) scale(1);
+        border-color: rgba(212,168,67,0.22);
+        box-shadow: 0 44px 120px rgba(0,0,0,0.52), 0 0 0 1px rgba(212,168,67,0.09);
+      }
+
+      /* CENTER — big, full color */
+      .seminar-card.pos-center {
+        transform: translateX(-50%) translateY(-50%) scale(1);
+        opacity: 1;
+        filter: none;
+        pointer-events: auto;
+        z-index: 3;
+      }
+
+      /* LEFT peek — greyscale, small, offset left */
+      .seminar-card.pos-left {
+        transform: translateX(calc(-50% - 500px)) translateY(-50%) scale(0.70);
+        opacity: 0.36;
+        filter: grayscale(1);
+        pointer-events: auto;
+        cursor: pointer;
+        z-index: 2;
+      }
+
+      /* RIGHT peek — greyscale, small, offset right */
+      .seminar-card.pos-right {
+        transform: translateX(calc(-50% + 500px)) translateY(-50%) scale(0.70);
+        opacity: 0.36;
+        filter: grayscale(1);
+        pointer-events: auto;
+        cursor: pointer;
+        z-index: 2;
+      }
+
+      /* Hover on side cards */
+      .seminar-card.pos-left:hover,
+      .seminar-card.pos-right:hover {
+        opacity: 0.56;
+        filter: grayscale(0.65);
+      }
+
+      /* Prevent iframes & links from swallowing click on side cards */
+      .seminar-card.pos-left .seminar-card__iframe,
+      .seminar-card.pos-right .seminar-card__iframe,
+      .seminar-card.pos-left .seminar-card__link,
+      .seminar-card.pos-right .seminar-card__link {
+        pointer-events: none;
+      }
+
+      /* Navigation hint overlays on side cards */
+      .seminar-card.pos-left::before,
+      .seminar-card.pos-right::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
+        z-index: 10;
+        cursor: pointer;
+      }
+    }
+
+    /* ── Mid-range desktop (760 – 1120 px) ── */
+    @media (min-width: 760px) and (max-width: 1120px) {
+      :root { --scale: 0.70; }
+
+      .seminar-card.pos-left {
+        transform: translateX(calc(-50% - 400px)) translateY(-50%) scale(0.68);
+      }
+      .seminar-card.pos-right {
+        transform: translateX(calc(-50% + 400px)) translateY(-50%) scale(0.68);
+      }
+
+      .catalog__scroller {
+        height: calc(var(--flyer-h) * var(--scale) + 160px);
+      }
+    }
+
+    /* ── MOBILE (≤ 760 px) ── */
+    @media (max-width: 760px) {
+      :root { --scale: 0.46; }
+      html { font-size: 16px; }
+      .topbar__inner, .catalog-header,
+      .catalog__controls, .catalog__scroller,
+      .footer-note { padding-left: 1rem; padding-right: 1rem; }
+      .topbar__inner { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+      .topbar__link { display: none; }
+      .brand { gap: 0.5rem; }
+      .brand__sub { display: none; }
+      .timeline-wrap { top: 52px; padding: 1.1rem 0.8rem 0.9rem; }
+      .timeline { gap: 0.65rem; justify-content: flex-start; }
+      .timeline__item { min-width: 140px; padding: 0.9rem 1rem 0.8rem; }
+      .timeline__date { font-size: 1.2rem; }
+      .catalog-header { padding-top: 1.8rem; }
+      .info-box { padding: 1rem 1rem 0; }
+      .info-box__inner { padding: 0.6rem 1rem; }
+      .info-box__item { font-size: 0.50rem; padding: 0 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div class="page">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="brand">
+          <a href="../index.html" class="brand__word">TRAMA</a>
+          <div class="brand__sub">Seminario permanente · Catálogo de flyers</div>
+        </div>
+        <a href="../index.html" class="topbar__link">Volver a TRAMA</a>
+      </div>
+    </header>
+
+    <section class="catalog-header">
+      <div class="catalog-header__eyebrow">Seminario de ciencias de la complejidad · UNAL</div>
+      <h1 class="catalog-header__title">Catálogo de <em>flyers</em></h1>
+    </section>
+
+    <!-- Info box: lugar y hora del seminario -->
+    <div class="info-box" aria-label="Información del seminario">
+      <div class="info-box__inner">
+        <span class="info-box__item info-box__item--hl">Miércoles</span>
+        <span class="info-box__dot" aria-hidden="true"></span>
+        <span class="info-box__item info-box__item--hl">6:00 PM</span>
+        <span class="info-box__dot" aria-hidden="true"></span>
+        <span class="info-box__item">Sala de música</span>
+        <span class="info-box__dot" aria-hidden="true"></span>
+        <span class="info-box__item">Biblioteca Central UNAL</span>
+        <span class="info-box__dot" aria-hidden="true"></span>
+        <span class="info-box__item">Bogotá</span>
+      </div>
+    </div>
+
+    <div class="timeline-wrap">
+      <nav class="timeline" id="timeline" aria-label="Fechas del seminario"></nav>
+    </div>
+
+    <main class="catalog">
+      <div class="catalog__inner">
+        <div class="catalog__controls">
+          <div class="catalog__buttons">
+            <button class="catalog__button" id="prevBtn" aria-label="Flyer anterior">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="catalog__button" id="nextBtn" aria-label="Siguiente flyer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <section class="catalog__scroller" id="catalogScroller" aria-label="Catálogo de flyers"></section>
+      </div>
+    </main>
+
+    <div class="footer-note">TRAMA · Seminario permanente · Ciencias de la Complejidad · UNAL</div>
+  </div>
+
+  <script>
+    const seminars = [
+      {
+        file: '2026-04-15 Cómo mapear la corrupción.html',
+        title: 'Cómo mapear la corrupción',
+        isoDate: '2026-04-15'
+      },
+      {
+        file: '2026-04-29 Entropia y complejidad.html',
+        title: 'Entropía y complejidad',
+        isoDate: '2026-04-29'
+      },
+      {
+        file: '16-05-2026 Centro-periferia como estructuras disipativas.html',
+        title: 'Centro-periferia como estructuras disipativas',
+        isoDate: '2026-05-16'
+      }
+    ].sort((a, b) => new Date(a.isoDate) - new Date(b.isoDate));
+
+    const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    const fmtLong = (iso) => {
+      const [y, m, d] = iso.split('-').map(Number);
+      return `${String(d).padStart(2, '0')} · ${months[m - 1]} · ${y}`;
+    };
+
+    const fmtShort = (iso) => {
+      const [y, m, d] = iso.split('-').map(Number);
+      return `${String(d).padStart(2, '0')} ${months[m - 1].slice(0, 3)} ${y}`;
+    };
+
+    const timeline = document.getElementById('timeline');
+    const scroller = document.getElementById('catalogScroller');
+    const prevBtn  = document.getElementById('prevBtn');
+    const nextBtn  = document.getElementById('nextBtn');
+
+    // ── Build DOM ──────────────────────────────────────────────
+    seminars.forEach((item, index) => {
+      // Timeline chip
+      const chip = document.createElement('button');
+      chip.className = 'timeline__item';
+      chip.type = 'button';
+      chip.dataset.index = index;
+      chip.innerHTML = `
+        <span class="timeline__date">${fmtShort(item.isoDate)}</span>
+        <span class="timeline__title">${item.title}</span>
+      `;
+      timeline.appendChild(chip);
+
+      // Flyer card
+      const card = document.createElement('article');
+      card.className = 'seminar-card';
+      card.dataset.index = index;
+      card.innerHTML = `
+        <div class="seminar-card__preview">
+          <iframe
+            class="seminar-card__iframe"
+            src="${item.file}"
+            title="Flyer: ${item.title}"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+          ></iframe>
+        </div>
+        <div class="seminar-card__meta">
+          <div class="seminar-card__date">${fmtLong(item.isoDate)}</div>
+          <div class="seminar-card__title">${item.title}</div>
+        </div>
+        <div class="seminar-card__footer">
+          <a class="seminar-card__link" href="${item.file}">Abrir flyer →</a>
+        </div>
+      `;
+      scroller.appendChild(card);
+    });
+
+    const cards = [...document.querySelectorAll('.seminar-card')];
+    const chips = [...document.querySelectorAll('.timeline__item')];
+
+    // ── Find next upcoming seminar ──────────────────────────────
+    const todayMs = (() => {
+      const d = new Date();
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    })();
+
+    let activeIndex = seminars.findIndex(s => new Date(s.isoDate + 'T00:00:00').getTime() >= todayMs);
+    if (activeIndex === -1) activeIndex = seminars.length - 1;
+
+    // ── Helpers ────────────────────────────────────────────────
+    const isDesktop = () => window.innerWidth >= 760;
+
+    function updatePositions() {
+      cards.forEach((card, i) => {
+        card.classList.remove('pos-center', 'pos-left', 'pos-right', 'is-active');
+
+        if (isDesktop()) {
+          const offset = i - activeIndex;
+          if (offset === 0)       card.classList.add('pos-center', 'is-active');
+          else if (offset === -1) card.classList.add('pos-left');
+          else if (offset === 1)  card.classList.add('pos-right');
+          // anything else: stays invisible (default CSS)
+        } else {
+          card.classList.toggle('is-active', i === activeIndex);
+        }
+      });
+
+      chips.forEach((chip, i) => chip.classList.toggle('is-active', i === activeIndex));
+
+      // Scroll timeline bar to keep active chip centered
+      const activeChip = chips[activeIndex];
+      if (activeChip) {
+        const desired = activeChip.offsetLeft - (timeline.clientWidth / 2) + (activeChip.offsetWidth / 2);
+        timeline.scrollTo({ left: desired, behavior: 'smooth' });
+      }
+    }
+
+    function goToIndex(index) {
+      const bounded = Math.max(0, Math.min(index, cards.length - 1));
+      activeIndex = bounded;
+
+      if (!isDesktop()) {
+        // Mobile: use native scroll snap
+        cards[bounded].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+
+      updatePositions();
+    }
+
+    // ── Event listeners ────────────────────────────────────────
+
+    // Side-card click (desktop only)
+    cards.forEach((card, i) => {
+      card.addEventListener('click', () => {
+        if (isDesktop() && i !== activeIndex) goToIndex(i);
+      });
+    });
+
+    // Timeline chips
+    chips.forEach((chip, i) => chip.addEventListener('click', () => goToIndex(i)));
+
+    // Arrow buttons
+    prevBtn.addEventListener('click', () => goToIndex(activeIndex - 1));
+    nextBtn.addEventListener('click', () => goToIndex(activeIndex + 1));
+
+    // Keyboard arrows
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') goToIndex(activeIndex + 1);
+      if (e.key === 'ArrowLeft')  goToIndex(activeIndex - 1);
+    });
+
+    // Mobile scroll sync (only when not desktop)
+    let scrollTimer;
+    scroller.addEventListener('scroll', () => {
+      if (isDesktop()) return;
+      clearTimeout(scrollTimer);
+      const center = scroller.scrollLeft + scroller.clientWidth / 2;
+      let nearest = 0, nearestDist = Infinity;
+      cards.forEach((card, i) => {
+        const dist = Math.abs((card.offsetLeft + card.offsetWidth / 2) - center);
+        if (dist < nearestDist) { nearestDist = dist; nearest = i; }
+      });
+      if (nearest !== activeIndex) { activeIndex = nearest; updatePositions(); }
+      scrollTimer = setTimeout(updatePositions, 90);
+    }, { passive: true });
+
+    // Resize: re-apply correct layout
+    window.addEventListener('resize', () => {
+      updatePositions();
+      if (!isDesktop()) {
+        cards[activeIndex]?.scrollIntoView({ behavior: 'instant', inline: 'center', block: 'nearest' });
+      }
+    });
+
+    // ── Init ──────────────────────────────────────────────────
+    // Run immediately and again after load (iframes may shift layout)
+    updatePositions();
+    window.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        updatePositions();
+        if (!isDesktop()) {
+          cards[activeIndex]?.scrollIntoView({ behavior: 'instant', inline: 'center', block: 'nearest' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
