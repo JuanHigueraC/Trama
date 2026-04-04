@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRAMA — Seminario permanente</title>
+  <meta name="description" content="Catálogo de flyers del Seminario Permanente de Ciencias de la Complejidad en TRAMA." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --wine-deepest:  #120304;
+      --wine-deep:     #1D0407;
+      --wine-mid:      #2C0609;
+      --wine-bright:   #5C1015;
+      --wine-glow:     #8B1A1A;
+      --terra:         #C8582A;
+      --terra-lt:      #D4784A;
+      --gold:          #D4A843;
+      --gold-lt:       #E0C06A;
+      --cream:         #F5EDE0;
+      --cream-92:      rgba(245,237,224,0.92);
+      --cream-80:      rgba(245,237,224,0.80);
+      --cream-62:      rgba(245,237,224,0.62);
+      --cream-38:      rgba(245,237,224,0.38);
+      --cream-18:      rgba(245,237,224,0.18);
+      --cream-08:      rgba(245,237,224,0.08);
+      --shadow-deep:   0 34px 100px rgba(0, 0, 0, 0.38);
+      --flyer-w:       600px;
+      --flyer-h:       780px;
+      --scale:         0.56;
+    }
+
+    html {
+      font-size: 18px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--cream);
+      background:
+        radial-gradient(ellipse 85% 60% at 10% 0%, rgba(92,16,21,0.72) 0%, transparent 52%),
+        radial-gradient(ellipse 72% 48% at 92% 22%, rgba(72,10,14,0.55) 0%, transparent 50%),
+        radial-gradient(ellipse 82% 45% at 50% 100%, rgba(60,8,12,0.48) 0%, transparent 55%),
+        linear-gradient(180deg, #180306 0%, #120304 100%);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      mix-blend-mode: screen;
+      z-index: 2;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    }
+
+    .page {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      background: rgba(18, 3, 4, 0.76);
+      border-bottom: 1px solid rgba(200, 88, 42, 0.18);
+    }
+
+    .topbar__inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 1rem 1.4rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 0.9rem;
+      min-width: max-content;
+    }
+
+    .brand__word {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.22em;
+      color: var(--cream-92);
+      line-height: 1;
+    }
+
+    .brand__sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.56rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(212, 168, 67, 0.72);
+      white-space: nowrap;
+    }
+
+    .topbar__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.72rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(245,237,224,0.12);
+      background: rgba(245,237,224,0.04);
+      color: var(--cream-80);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.23em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, background 180ms ease;
+    }
+
+    .topbar__link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.28);
+      color: var(--cream);
+      background: rgba(212,168,67,0.06);
+    }
+
+    .hero {
+      padding: 4.5rem 1.5rem 2.2rem;
+    }
+
+    .hero__inner {
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(212,168,67,0.68);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.92fr);
+      gap: 2.4rem;
+      align-items: end;
+    }
+
+    .hero__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 7vw, 5.9rem);
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      color: var(--cream);
+      margin-bottom: 1.35rem;
+      max-width: 10ch;
+    }
+
+    .hero__title em {
+      font-style: italic;
+      color: rgba(245,237,224,0.58);
+    }
+
+    .hero__lede {
+      max-width: 58ch;
+      font-size: 1.03rem;
+      line-height: 1.9;
+      font-weight: 300;
+      color: var(--cream-80);
+    }
+
+    .hero__aside {
+      padding: 1.4rem 1.5rem 1.4rem;
+      border: 1px solid rgba(245,237,224,0.08);
+      background: linear-gradient(160deg, rgba(44,6,9,0.70), rgba(24,3,6,0.34));
+      box-shadow: var(--shadow-deep);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero__aside-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: rgba(212,168,67,0.66);
+      margin-bottom: 0.95rem;
+    }
+
+    .hero__aside-text {
+      color: var(--cream-62);
+      font-size: 0.92rem;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    .hero__aside-text strong {
+      color: var(--cream-92);
+      font-weight: 500;
+    }
+
+    .timeline-wrap {
+      position: sticky;
+      top: 73px;
+      z-index: 90;
+      padding: 0 1.5rem 0.4rem;
+      background: linear-gradient(180deg, rgba(18,3,4,0.86), rgba(18,3,4,0.72));
+      border-bottom: 1px solid rgba(245,237,224,0.06);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .timeline {
+      max-width: 1480px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.9rem;
+      overflow-x: auto;
+      padding: 1rem 0 0.9rem;
+      scrollbar-width: none;
+    }
+
+    .timeline::-webkit-scrollbar { display: none; }
+
+    .timeline__item {
+      min-width: max-content;
+      border: 1px solid rgba(245,237,224,0.08);
+      background: rgba(245,237,224,0.035);
+      color: var(--cream-62);
+      border-radius: 999px;
+      padding: 0.78rem 1rem 0.76rem;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+      text-align: left;
+    }
+
+    .timeline__item:hover,
+    .timeline__item:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.22);
+      color: var(--cream-92);
+      outline: none;
+    }
+
+    .timeline__item.is-active {
+      border-color: rgba(212,168,67,0.34);
+      color: var(--cream);
+      background: linear-gradient(180deg, rgba(212,168,67,0.10), rgba(245,237,224,0.03));
+      box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+    }
+
+    .timeline__date {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(212,168,67,0.76);
+      margin-bottom: 0.22rem;
+    }
+
+    .timeline__title {
+      display: block;
+      font-size: 0.86rem;
+      line-height: 1.3;
+      font-weight: 400;
+      max-width: 28ch;
+    }
+
+    .catalog {
+      padding: 2.2rem 0 4rem;
+    }
+
+    .catalog__inner {
+      position: relative;
+      max-width: 100%;
+    }
+
+    .catalog__controls {
+      max-width: 1480px;
+      margin: 0 auto 1rem;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .catalog__hint {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(245,237,224,0.30);
+    }
+
+    .catalog__buttons {
+      display: flex;
+      gap: 0.55rem;
+    }
+
+    .catalog__button {
+      appearance: none;
+      border: 1px solid rgba(245,237,224,0.10);
+      background: rgba(245,237,224,0.04);
+      color: var(--cream-80);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, background 180ms ease;
+      display: grid;
+      place-items: center;
+    }
+
+    .catalog__button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.25);
+      background: rgba(212,168,67,0.06);
+      color: var(--cream);
+    }
+
+    .catalog__scroller {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(320px, calc(var(--flyer-w) * var(--scale) + 42px));
+      gap: 1.4rem;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      padding: 0 1.5rem 0.8rem;
+      scrollbar-width: none;
+    }
+
+    .catalog__scroller::-webkit-scrollbar { display: none; }
+
+    .seminar-card {
+      scroll-snap-align: center;
+      border: 1px solid rgba(245,237,224,0.08);
+      background: linear-gradient(160deg, rgba(44,6,9,0.82), rgba(18,3,4,0.54));
+      box-shadow: var(--shadow-deep);
+      backdrop-filter: blur(14px);
+      border-radius: 28px;
+      padding: 1rem;
+      transition: transform 260ms ease, border-color 260ms ease, box-shadow 260ms ease;
+      min-height: calc(var(--flyer-h) * var(--scale) + 168px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .seminar-card.is-active {
+      transform: translateY(-4px);
+      border-color: rgba(212,168,67,0.20);
+      box-shadow: 0 32px 90px rgba(0,0,0,0.38), 0 0 0 1px rgba(212,168,67,0.06);
+    }
+
+    .seminar-card__meta {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .seminar-card__date {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: rgba(212,168,67,0.80);
+      margin-bottom: 0.52rem;
+    }
+
+    .seminar-card__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.42rem;
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      color: var(--cream);
+      max-width: 18ch;
+    }
+
+    .seminar-card__index {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      color: rgba(245,237,224,0.10);
+      line-height: 0.9;
+      user-select: none;
+    }
+
+    .seminar-card__preview {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(245,237,224,0.10);
+      background: #0d0708;
+      width: calc(var(--flyer-w) * var(--scale));
+      height: calc(var(--flyer-h) * var(--scale));
+      margin-inline: auto;
+      box-shadow: 0 18px 46px rgba(0,0,0,0.28);
+    }
+
+    .seminar-card__preview::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(245,237,224,0.00) 0%, rgba(18,3,4,0.04) 100%);
+    }
+
+    .seminar-card__iframe {
+      position: absolute;
+      inset: 0;
+      width: var(--flyer-w);
+      height: var(--flyer-h);
+      border: 0;
+      transform: scale(var(--scale));
+      transform-origin: top left;
+      background: #0d0708;
+    }
+
+    .seminar-card__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .seminar-card__status {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.49rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: rgba(245,237,224,0.34);
+    }
+
+    .seminar-card__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.82rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(245,237,224,0.12);
+      background: rgba(245,237,224,0.04);
+      color: var(--cream-88);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .seminar-card__link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.24);
+      background: rgba(212,168,67,0.06);
+    }
+
+    .footer-note {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 0 1.5rem 2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.48rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(245,237,224,0.18);
+    }
+
+    @media (max-width: 1120px) {
+      :root { --scale: 0.50; }
+      .hero__grid { grid-template-columns: 1fr; }
+      .hero__title { max-width: 14ch; }
+    }
+
+    @media (max-width: 760px) {
+      :root { --scale: 0.40; }
+      html { font-size: 16px; }
+      .topbar__inner,
+      .hero,
+      .timeline-wrap,
+      .catalog__controls,
+      .catalog__scroller,
+      .footer-note { padding-left: 1rem; padding-right: 1rem; }
+      .topbar__inner { padding-top: 0.85rem; padding-bottom: 0.85rem; }
+      .topbar__link { display: none; }
+      .brand { gap: 0.55rem; flex-direction: column; align-items: flex-start; }
+      .brand__sub { white-space: normal; line-height: 1.5; }
+      .timeline-wrap { top: 64px; }
+      .catalog__controls { margin-bottom: 0.7rem; }
+      .seminar-card { border-radius: 24px; }
+      .seminar-card__title { font-size: 1.26rem; }
+      .catalog__hint { max-width: 17ch; line-height: 1.7; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div class="page">
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="brand">
+          <a href="../index.html" class="brand__word" style="text-decoration:none; color:inherit;">TRAMA</a>
+          <div class="brand__sub">Seminario permanente · Catálogo de flyers</div>
+        </div>
+        <a href="../index.html" class="topbar__link">Volver a TRAMA</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero__inner">
+        <div class="eyebrow">Seminario de ciencias de la complejidad</div>
+        <div class="hero__grid">
+          <div>
+            <h1 class="hero__title">Un archivo vivo de <em>encuentros, preguntas y flyers</em></h1>
+            <p class="hero__lede">
+              Esta página reúne los flyers del seminario como un catálogo navegable. Cada pieza sigue viviendo como su propio archivo HTML dentro de esta misma carpeta, y aquí aparece como una vista previa desplazable para recorrer las sesiones, comparar su lenguaje visual y entrar a cada charla.
+            </p>
+          </div>
+          <aside class="hero__aside">
+            <div class="hero__aside-label">Cómo navegar</div>
+            <p class="hero__aside-text">
+              Usa las <strong>fechas de arriba</strong> para saltar entre sesiones o desplázate horizontalmente por el catálogo. Cada flyer se carga desde su HTML original, así que esta página funciona como una <strong>portada-archivo</strong>, no como una copia.
+            </p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <div class="timeline-wrap">
+      <nav class="timeline" id="timeline" aria-label="Fechas del seminario"></nav>
+    </div>
+
+    <main class="catalog">
+      <div class="catalog__inner">
+        <div class="catalog__controls">
+          <div class="catalog__hint">Desplaza, usa las flechas o haz clic en la fecha</div>
+          <div class="catalog__buttons">
+            <button class="catalog__button" id="prevBtn" aria-label="Flyer anterior">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="catalog__button" id="nextBtn" aria-label="Siguiente flyer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <section class="catalog__scroller" id="catalogScroller" aria-label="Catálogo horizontal de flyers"></section>
+      </div>
+    </main>
+
+    <div class="footer-note">TRAMA · Seminario permanente · Catálogo HTML de flyers</div>
+  </div>
+
+  <script>
+    const seminars = [
+      {
+        file: '2026-04-15 Cómo mapear la corrupción.html',
+        title: 'Cómo mapear la corrupción',
+        isoDate: '2026-04-15'
+      },
+      {
+        file: '2026-04-29 Entropia y complejidad.html',
+        title: 'Entropía y complejidad',
+        isoDate: '2026-04-29'
+      },
+      {
+        file: '16-05-2026 Centro-periferia como estructuras disipativas.html',
+        title: 'Centro-periferia como estructuras disipativas',
+        isoDate: '2026-05-16'
+      }
+    ].sort((a, b) => new Date(a.isoDate) - new Date(b.isoDate));
+
+    const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    const fmtLong = (iso) => {
+      const [y, m, d] = iso.split('-').map(Number);
+      return `${String(d).padStart(2, '0')} · ${months[m - 1]} · ${y}`;
+    };
+
+    const fmtShort = (iso) => {
+      const [y, m, d] = iso.split('-').map(Number);
+      return `${String(d).padStart(2, '0')} ${months[m - 1].slice(0, 3)} ${y}`;
+    };
+
+    const timeline = document.getElementById('timeline');
+    const scroller = document.getElementById('catalogScroller');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    seminars.forEach((item, index) => {
+      const chip = document.createElement('button');
+      chip.className = 'timeline__item';
+      chip.type = 'button';
+      chip.dataset.index = index;
+      chip.innerHTML = `
+        <span class="timeline__date">${fmtShort(item.isoDate)}</span>
+        <span class="timeline__title">${item.title}</span>
+      `;
+      timeline.appendChild(chip);
+
+      const card = document.createElement('article');
+      card.className = 'seminar-card';
+      card.dataset.index = index;
+      card.innerHTML = `
+        <div class="seminar-card__meta">
+          <div>
+            <div class="seminar-card__date">${fmtLong(item.isoDate)}</div>
+            <h2 class="seminar-card__title">${item.title}</h2>
+          </div>
+          <div class="seminar-card__index">${String(index + 1).padStart(2, '0')}</div>
+        </div>
+
+        <div class="seminar-card__preview">
+          <iframe
+            class="seminar-card__iframe"
+            src="${item.file}"
+            title="Flyer ${item.title}"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+          ></iframe>
+        </div>
+
+        <div class="seminar-card__footer">
+          <div class="seminar-card__status">Archivo HTML original</div>
+          <a class="seminar-card__link" href="${item.file}">Abrir flyer</a>
+        </div>
+      `;
+      scroller.appendChild(card);
+    });
+
+    const cards = [...document.querySelectorAll('.seminar-card')];
+    const chips = [...document.querySelectorAll('.timeline__item')];
+    let activeIndex = 0;
+
+    function goToIndex(index, behavior = 'smooth') {
+      const bounded = Math.max(0, Math.min(index, cards.length - 1));
+      activeIndex = bounded;
+      cards[bounded].scrollIntoView({ behavior, inline: 'center', block: 'nearest' });
+      syncActiveState();
+    }
+
+    function syncActiveState() {
+      const center = scroller.scrollLeft + (scroller.clientWidth / 2);
+      let nearestIndex = 0;
+      let nearestDistance = Infinity;
+
+      cards.forEach((card, index) => {
+        const cardCenter = card.offsetLeft + (card.offsetWidth / 2);
+        const distance = Math.abs(center - cardCenter);
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          nearestIndex = index;
+        }
+      });
+
+      activeIndex = nearestIndex;
+
+      cards.forEach((card, index) => card.classList.toggle('is-active', index === nearestIndex));
+      chips.forEach((chip, index) => chip.classList.toggle('is-active', index === nearestIndex));
+
+      const activeChip = chips[nearestIndex];
+      if (activeChip) {
+        const desired = activeChip.offsetLeft - (timeline.clientWidth / 2) + (activeChip.offsetWidth / 2);
+        timeline.scrollTo({ left: desired, behavior: 'smooth' });
+      }
+    }
+
+    chips.forEach((chip, index) => {
+      chip.addEventListener('click', () => goToIndex(index));
+    });
+
+    prevBtn.addEventListener('click', () => goToIndex(activeIndex - 1));
+    nextBtn.addEventListener('click', () => goToIndex(activeIndex + 1));
+
+    let scrollTimer;
+    scroller.addEventListener('scroll', () => {
+      clearTimeout(scrollTimer);
+      syncActiveState();
+      scrollTimer = setTimeout(syncActiveState, 90);
+    }, { passive: true });
+
+    scroller.addEventListener('wheel', (event) => {
+      if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+        event.preventDefault();
+        scroller.scrollLeft += event.deltaY;
+      }
+    }, { passive: false });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight') goToIndex(activeIndex + 1);
+      if (event.key === 'ArrowLeft') goToIndex(activeIndex - 1);
+    });
+
+    window.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        syncActiveState();
+      });
+    });
+  </script>
+</body>
+</html>
