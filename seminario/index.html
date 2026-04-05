@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRAMA — Seminarios</title>
+  <meta name="description" content="Seminarios de TRAMA sobre Ciencias de la Complejidad. Quincenales, miércoles 6pm, sala de música de la Biblioteca Central de la UNAL, Bogotá." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --wine-deepest:  #120304;
+      --wine-deep:     #1D0407;
+      --wine-mid:      #2C0609;
+      --wine-bright:   #5C1015;
+      --wine-glow:     #8B1A1A;
+      --terra:         #C8582A;
+      --terra-lt:      #D4784A;
+      --gold:          #D4A843;
+      --gold-lt:       #E0C06A;
+      --cream:         #F5EDE0;
+      --cream-92:      rgba(245,237,224,0.92);
+      --cream-80:      rgba(245,237,224,0.80);
+      --cream-62:      rgba(245,237,224,0.62);
+      --cream-38:      rgba(245,237,224,0.38);
+      --cream-18:      rgba(245,237,224,0.18);
+      --cream-08:      rgba(245,237,224,0.08);
+      --shadow-deep:   0 34px 100px rgba(0, 0, 0, 0.38);
+      --flyer-w:       600px;
+      --flyer-h:       780px;
+      --scale:         0.84;
+    }
+
+    html { font-size: 18px; scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--cream);
+      background:
+        radial-gradient(ellipse 85% 60% at 10% 0%, rgba(92,16,21,0.72) 0%, transparent 52%),
+        radial-gradient(ellipse 72% 48% at 92% 22%, rgba(72,10,14,0.55) 0%, transparent 50%),
+        radial-gradient(ellipse 82% 45% at 50% 100%, rgba(60,8,12,0.48) 0%, transparent 55%),
+        linear-gradient(180deg, #180306 0%, #120304 100%);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .grain {
+      position: fixed; inset: 0; pointer-events: none;
+      opacity: 0.12; mix-blend-mode: screen; z-index: 2;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      will-change: auto;
+    }
+
+    .page { position: relative; z-index: 10; min-height: 100vh; }
+
+    /* ══════════════════════════════════════
+       TOPBAR — marca + volver
+    ══════════════════════════════════════ */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+      background: rgba(18, 3, 4, 0.82);
+      border-bottom: 1px solid rgba(200, 88, 42, 0.15);
+    }
+
+    .topbar__inner {
+      max-width: 1480px; margin: 0 auto;
+      padding: 0.85rem 1.6rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1.2rem;
+    }
+
+    .brand { display: flex; align-items: baseline; gap: 0.9rem; min-width: max-content; }
+
+    .brand__word {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.22em;
+      color: var(--cream-92); line-height: 1; text-decoration: none;
+    }
+
+    .brand__sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.52rem; letter-spacing: 0.26em;
+      text-transform: uppercase; color: rgba(212,168,67,0.60); white-space: nowrap;
+    }
+
+    .topbar__link {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.6rem 1rem; border-radius: 999px;
+      border: 1px solid rgba(245,237,224,0.10);
+      background: rgba(245,237,224,0.03);
+      color: var(--cream-62);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.50rem; letter-spacing: 0.22em; text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, background 180ms ease;
+    }
+
+    .topbar__link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.24); color: var(--cream);
+      background: rgba(212,168,67,0.05);
+    }
+
+    /* ══════════════════════════════════════
+       SESSION BAR
+       Sticky debajo del topbar.
+       Contiene: título "Seminarios de Trama"
+       + dos badges de info (hora y lugar).
+    ══════════════════════════════════════ */
+    .session-bar {
+      position: sticky; top: 57px; z-index: 90;
+      padding: 0.8rem 1.6rem;
+      background: linear-gradient(180deg, rgba(18,3,4,0.97) 0%, rgba(18,3,4,0.90) 100%);
+      border-bottom: 1px solid rgba(245,237,224,0.07);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    }
+
+    .session-bar__inner {
+      max-width: 1480px; margin: 0 auto;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .session-bar__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+      font-weight: 700; line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--cream);
+      white-space: nowrap;
+    }
+
+    .session-bar__title em {
+      font-style: italic;
+      color: rgba(245,237,224,0.42);
+    }
+
+    /* Contenedor de los dos badges */
+    .info-badges {
+      display: flex; gap: 0.65rem; flex-shrink: 0;
+    }
+
+    /* Cada badge */
+    .info-badge {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.6rem 1rem;
+      border: 1px solid rgba(200, 88, 42, 0.32);
+      background: rgba(200, 88, 42, 0.09);
+      border-radius: 12px;
+      transition: border-color 200ms ease, background 200ms ease;
+    }
+
+    .info-badge:hover {
+      border-color: rgba(200, 88, 42, 0.52);
+      background: rgba(200, 88, 42, 0.16);
+    }
+
+    .info-badge__icon {
+      font-size: 1.25rem; line-height: 1; flex-shrink: 0;
+    }
+
+    .info-badge__text {
+      display: flex; flex-direction: column; gap: 0.15rem;
+    }
+
+    .info-badge__main {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.64rem; letter-spacing: 0.13em;
+      text-transform: uppercase; color: var(--gold);
+      white-space: nowrap;
+    }
+
+    .info-badge__sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.48rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--cream-62);
+      white-space: nowrap;
+    }
+
+    /* ══════════════════════════════════════
+       CATALOG
+    ══════════════════════════════════════ */
+    .catalog { padding: 0 0 5rem; }
+
+    .catalog__inner { position: relative; max-width: 100%; }
+
+    /* Botones prev / next */
+    .catalog__controls {
+      max-width: 1480px; margin: 0 auto;
+      padding: 1rem 1.6rem 0;
+      display: flex; justify-content: flex-end; align-items: center; gap: 0.6rem;
+    }
+
+    .catalog__buttons { display: flex; gap: 0.5rem; }
+
+    .catalog__button {
+      appearance: none;
+      border: 1px solid rgba(245,237,224,0.09);
+      background: rgba(245,237,224,0.03);
+      color: var(--cream-62); width: 40px; height: 40px;
+      border-radius: 50%; cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, background 180ms ease;
+      display: grid; place-items: center;
+    }
+
+    .catalog__button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.25);
+      background: rgba(212,168,67,0.06); color: var(--cream);
+    }
+
+    /* ── CHIPS BAR — pegada justo arriba del carrusel ── */
+    .chips-bar {
+      max-width: 1480px; margin: 0 auto;
+      /* padding-top pequeño; padding-bottom cero para que quede pegada al carrusel */
+      padding: 0.75rem 1.6rem 0;
+      display: flex; justify-content: center;
+      gap: 0.6rem; overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .chips-bar::-webkit-scrollbar { display: none; }
+
+    .timeline__item {
+      min-width: 150px;
+      border: 1px solid rgba(245,237,224,0.09);
+      background: rgba(245,237,224,0.03);
+      color: var(--cream-62);
+      border-radius: 10px;
+      padding: 0.42rem 1rem;
+      cursor: pointer;
+      transition: transform 200ms ease, border-color 200ms ease, color 200ms ease,
+                  background 200ms ease, box-shadow 200ms ease;
+      text-align: center; flex-shrink: 0;
+    }
+
+    .timeline__item:hover, .timeline__item:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.28); color: var(--cream-92); outline: none;
+    }
+
+    .timeline__item.is-active {
+      border-color: rgba(212,168,67,0.42); color: var(--cream);
+      background: linear-gradient(160deg, rgba(212,168,67,0.12), rgba(245,237,224,0.03));
+      box-shadow: 0 6px 20px rgba(0,0,0,0.22), 0 0 0 1px rgba(212,168,67,0.08);
+      transform: translateY(-1px);
+    }
+
+    .timeline__date {
+      display: block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.05rem; letter-spacing: 0.12em;
+      color: var(--gold); line-height: 1; margin-bottom: 0.18rem;
+    }
+
+    .timeline__item.is-active .timeline__date { color: var(--gold-lt); }
+
+    .timeline__title {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.40rem; letter-spacing: 0.14em;
+      text-transform: uppercase; line-height: 1.4;
+      color: rgba(245,237,224,0.46); max-width: 22ch; margin: 0 auto;
+    }
+
+    .timeline__item.is-active .timeline__title { color: rgba(245,237,224,0.68); }
+
+    /* ── MOBILE SCROLLER (default) ── */
+    .catalog__scroller {
+      max-width: 100%;
+      display: grid; grid-auto-flow: column;
+      grid-auto-columns: calc(var(--flyer-w) * var(--scale) + 32px);
+      gap: 2rem;
+      overflow-x: auto; overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      padding: 0.5rem 2rem 1.5rem;
+      scrollbar-width: none;
+    }
+
+    .catalog__scroller::-webkit-scrollbar { display: none; }
+
+    /* ── CARD ── */
+    .seminar-card {
+      scroll-snap-align: center;
+      border: 1px solid rgba(245,237,224,0.07);
+      background: rgba(18,3,4,0.45);
+      box-shadow: var(--shadow-deep);
+      border-radius: 24px; padding: 0.85rem;
+      transition:
+        transform 480ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 480ms ease,
+        box-shadow 480ms ease,
+        opacity 480ms ease,
+        filter 480ms ease;
+      display: flex; flex-direction: column; gap: 0.75rem;
+      contain: layout style paint;
+    }
+
+    .seminar-card.is-active {
+      transform: translateY(-6px);
+      border-color: rgba(212,168,67,0.22);
+      box-shadow: 0 44px 100px rgba(0,0,0,0.46), 0 0 0 1px rgba(212,168,67,0.07);
+    }
+
+    .seminar-card__preview {
+      position: relative; border-radius: 16px; overflow: hidden;
+      border: 1px solid rgba(245,237,224,0.10);
+      background: #0d0708;
+      width: calc(var(--flyer-w) * var(--scale));
+      height: calc(var(--flyer-h) * var(--scale));
+      box-shadow: 0 16px 40px rgba(0,0,0,0.32);
+      order: 1;
+    }
+
+    .seminar-card__preview::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(180deg, transparent 60%, rgba(18,3,4,0.08) 100%);
+    }
+
+    .seminar-card__iframe {
+      position: absolute; inset: 0;
+      width: var(--flyer-w); height: var(--flyer-h);
+      border: 0;
+      transform: scale(var(--scale)); transform-origin: top left;
+      background: #0d0708;
+      opacity: 0;
+      transition: opacity 380ms ease;
+    }
+
+    .seminar-card__iframe.is-loaded { opacity: 1; }
+
+    .seminar-card__img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 0;
+      display: block;
+    }
+
+    /* ── IMAGEN ESTÁTICA para flyers HTML cuando están inactivos ── */
+    /* Se comporta igual que __img. El grayscale lo aplica el padre (.pos-left/.pos-right). */
+    .seminar-card__static {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 0;
+      display: block;
+      z-index: 2;
+      transition: opacity 320ms ease;
+      pointer-events: none;
+    }
+
+    /* Cuando la tarjeta es el centro activo, la imagen estática se desvanece
+       y el iframe cargado queda visible debajo */
+    .seminar-card.pos-center .seminar-card__static {
+      opacity: 0;
+    }
+
+    .seminar-card__meta {
+      order: 2;
+      padding: 0.1rem 0.4rem 0.2rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+
+    .seminar-card__date {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; letter-spacing: 0.10em;
+      color: var(--gold); line-height: 1;
+    }
+
+    .seminar-card__title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.46rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(245,237,224,0.46); line-height: 1.6;
+      text-align: right; max-width: 24ch;
+    }
+
+    .seminar-card__footer {
+      order: 3;
+      display: flex; justify-content: flex-end;
+      padding: 0 0.4rem 0.1rem;
+    }
+
+    .seminar-card__link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 0.9rem; border-radius: 999px;
+      border: 1px solid rgba(245,237,224,0.10);
+      background: rgba(245,237,224,0.03);
+      color: var(--cream-62);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.48rem; letter-spacing: 0.20em; text-transform: uppercase;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .seminar-card__link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212,168,67,0.26);
+      background: rgba(212,168,67,0.06); color: var(--cream);
+    }
+
+    /* ── FOOTER NOTE ── */
+    .footer-note {
+      max-width: 1480px; margin: 0 auto; padding: 0 1.6rem 2.4rem;
+      font-family: 'Space Mono', monospace; font-size: 0.44rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: rgba(245,237,224,0.14); text-align: center;
+    }
+
+    /* ════════════════════════════════════════
+       DESKTOP FOCAL CAROUSEL  (≥ 760 px)
+    ════════════════════════════════════════ */
+    @media (min-width: 760px) {
+
+      .catalog__scroller {
+        display: block; position: relative; overflow: hidden;
+        height: calc(var(--flyer-h) * var(--scale) + 180px);
+        padding: 0;
+        scroll-snap-type: none;
+        grid-auto-flow: unset; grid-auto-columns: unset; gap: unset;
+      }
+
+      .seminar-card {
+        position: absolute; left: 50%; top: 50%;
+        width: calc(var(--flyer-w) * var(--scale) + 32px);
+        transform: translateX(-50%) translateY(-50%) scale(0.55);
+        opacity: 0; pointer-events: none; filter: grayscale(1);
+        z-index: 1; scroll-snap-align: none;
+      }
+
+      .seminar-card.is-active {
+        transform: translateX(-50%) translateY(-50%) scale(1);
+        border-color: rgba(212,168,67,0.22);
+        box-shadow: 0 44px 120px rgba(0,0,0,0.52), 0 0 0 1px rgba(212,168,67,0.09);
+      }
+
+      .seminar-card.pos-center {
+        transform: translateX(-50%) translateY(-50%) scale(1);
+        opacity: 1; filter: none; pointer-events: auto; z-index: 3;
+        will-change: transform, opacity;
+      }
+
+      .seminar-card.pos-left {
+        transform: translateX(calc(-50% - 500px)) translateY(-50%) scale(0.70);
+        opacity: 0.36; filter: grayscale(1);
+        pointer-events: auto; cursor: pointer; z-index: 2;
+        will-change: transform, opacity;
+      }
+
+      .seminar-card.pos-right {
+        transform: translateX(calc(-50% + 500px)) translateY(-50%) scale(0.70);
+        opacity: 0.36; filter: grayscale(1);
+        pointer-events: auto; cursor: pointer; z-index: 2;
+        will-change: transform, opacity;
+      }
+
+      .seminar-card.pos-left:hover,
+      .seminar-card.pos-right:hover { opacity: 0.56; filter: grayscale(0.65); }
+
+      .seminar-card.pos-left .seminar-card__iframe,
+      .seminar-card.pos-right .seminar-card__iframe,
+      .seminar-card.pos-left .seminar-card__img,
+      .seminar-card.pos-right .seminar-card__img,
+      .seminar-card.pos-left .seminar-card__link,
+      .seminar-card.pos-right .seminar-card__link { pointer-events: none; }
+
+      .seminar-card.pos-left::before,
+      .seminar-card.pos-right::before {
+        content: ''; position: absolute; inset: 0;
+        border-radius: 24px; z-index: 10; cursor: pointer;
+      }
+
+      .chips-bar { justify-content: center; }
+    }
+
+    /* ── Mid-range desktop (760 – 1120 px) ── */
+    @media (min-width: 760px) and (max-width: 1120px) {
+      :root { --scale: 0.70; }
+
+      .seminar-card.pos-left  { transform: translateX(calc(-50% - 400px)) translateY(-50%) scale(0.68); }
+      .seminar-card.pos-right { transform: translateX(calc(-50% + 400px)) translateY(-50%) scale(0.68); }
+      .catalog__scroller      { height: calc(var(--flyer-h) * var(--scale) + 160px); }
+    }
+
+    /* ── MOBILE (≤ 760 px) ── */
+    @media (max-width: 760px) {
+      :root { --scale: 0.46; }
+      html { font-size: 16px; }
+
+      .topbar__inner, .catalog__controls,
+      .chips-bar, .catalog__scroller,
+      .footer-note { padding-left: 1rem; padding-right: 1rem; }
+
+      .topbar__inner { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+      .topbar__link  { display: none; }
+      .brand         { gap: 0.5rem; }
+      .brand__sub    { display: none; }
+
+      .session-bar { top: 52px; padding: 0.6rem 1rem; }
+      .session-bar__inner { gap: 0.7rem; }
+      .session-bar__title { font-size: clamp(1.15rem, 5vw, 1.5rem); }
+
+      .info-badges { gap: 0.45rem; }
+      .info-badge  { padding: 0.5rem 0.7rem; gap: 0.45rem; }
+      .info-badge__icon { font-size: 1rem; }
+      .info-badge__main { font-size: 0.56rem; }
+      .info-badge__sub  { font-size: 0.40rem; }
+
+      .chips-bar { justify-content: flex-start; padding-top: 0.6rem; }
+      .timeline__item { min-width: 130px; }
+    }
+
+    /* Pantallas muy pequeñas: badges se apilan */
+    @media (max-width: 480px) {
+      .session-bar__inner { flex-direction: column; align-items: flex-start; }
+      .info-badges { width: 100%; }
+      .info-badge  { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div class="page">
+
+    <!-- Barra superior: marca y link de vuelta -->
+    <header class="topbar">
+      <div class="topbar__inner">
+        <div class="brand">
+          <a href="../index.html" class="brand__word">TRAMA</a>
+          <div class="brand__sub">Seminarios · Ciencias de la Complejidad</div>
+        </div>
+        <a href="../index.html" class="topbar__link">Volver a TRAMA</a>
+      </div>
+    </header>
+
+    <!-- Barra sticky: título de la sección + dos badges de info -->
+    <div class="session-bar">
+      <div class="session-bar__inner">
+        <h1 class="session-bar__title">Seminarios <em>de Trama</em></h1>
+        <div class="info-badges" aria-label="Información del seminario">
+          <div class="info-badge">
+            <span class="info-badge__icon" aria-hidden="true">🕕</span>
+            <div class="info-badge__text">
+              <span class="info-badge__main">Miércoles · 6:00 PM</span>
+              <span class="info-badge__sub">Quincenal</span>
+            </div>
+          </div>
+          <div class="info-badge">
+            <span class="info-badge__icon" aria-hidden="true">📍</span>
+            <div class="info-badge__text">
+              <span class="info-badge__main">Sala de música · UNAL</span>
+              <span class="info-badge__sub">Bib. Central · Bogotá</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catálogo -->
+    <main class="catalog">
+      <div class="catalog__inner">
+
+        <!-- Botones prev / next -->
+        <div class="catalog__controls">
+          <div class="catalog__buttons">
+            <button class="catalog__button" id="prevBtn" aria-label="Flyer anterior">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="catalog__button" id="nextBtn" aria-label="Siguiente flyer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Chips de fecha: justo arriba del carrusel -->
+        <nav class="chips-bar" id="timeline" aria-label="Fechas del seminario"></nav>
+
+        <!-- Carrusel de flyers -->
+        <section class="catalog__scroller" id="catalogScroller" aria-label="Seminarios de Trama"></section>
+
+      </div>
+    </main>
+
+    <div class="footer-note">TRAMA · Seminarios de Ciencias de la Complejidad · Bogotá</div>
+  </div>
+
+  <script>
+    const seminars = [
+      {
+        file: '2026-02-25 cooperación y competencia bajo dureza ambiental.jpeg',
+        title: 'Cooperación y competencia bajo dureza ambiental',
+        isoDate: '2026-02-25',
+        type: 'image'
+      },
+      {
+        file: '2026-03-18 interacciones ecologicas.jpeg',
+        title: 'Interacciones ecológicas',
+        isoDate: '2026-03-18',
+        type: 'image'
+      },
+      {
+        file: '2026-04-15 Cómo mapear la corrupción.html',
+        preview: '2026-04-15 Cómo mapear la corrupción.jpg',
+        title: 'Cómo mapear la corrupción',
+        isoDate: '2026-04-15'
+      },
+      {
+        file: '2026-04-29 Entropia y complejidad.html',
+        preview: '2026-04-29 Entropia y complejidad.jpg',
+        title: 'Entropía y complejidad',
+        isoDate: '2026-04-29'
+      },
+      {
+        file: '16-05-2026 Centro-periferia como estructuras disipativas.html',
+        preview: '16-05-2026 Centro-periferia como estructuras disipativas.jpg',
+        title: 'Centro-periferia como estructuras disipativas',
+        isoDate: '2026-05-16'
+      }
+    ].sort((a, b) => new Date(a.isoDate) - new Date(b.isoDate));
+
+    const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+    const fmtLong = (iso) => {
+      const [y, m, d] = iso.split('-').map(Number);
+      return `${String(d).padStart(2, '0')} · ${months[m - 1]} · ${y}`;
+    };
+
+    const fmtShort = (iso) => {
+      const [y, m, d] = iso.split('-').map(Number);
+      return `${String(d).padStart(2, '0')} ${months[m - 1].slice(0, 3)} ${y}`;
+    };
+
+    const timeline = document.getElementById('timeline');
+    const scroller  = document.getElementById('catalogScroller');
+    const prevBtn   = document.getElementById('prevBtn');
+    const nextBtn   = document.getElementById('nextBtn');
+
+    // ── Build DOM ──────────────────────────────────────────────
+    seminars.forEach((item, index) => {
+      const chip = document.createElement('button');
+      chip.className = 'timeline__item';
+      chip.type = 'button';
+      chip.dataset.index = index;
+      chip.innerHTML = `
+        <span class="timeline__date">${fmtShort(item.isoDate)}</span>
+        <span class="timeline__title">${item.title}</span>
+      `;
+      timeline.appendChild(chip);
+
+      const card = document.createElement('article');
+      card.className = 'seminar-card';
+      card.dataset.index = index;
+      const previewInner = item.type === 'image'
+        ? `<img
+            class="seminar-card__img"
+            src="${item.file}"
+            alt="Flyer: ${item.title}"
+          />`
+        : `<img
+            class="seminar-card__static"
+            src="${item.preview}"
+            alt="Vista previa: ${item.title}"
+          />
+          <iframe
+            class="seminar-card__iframe"
+            src="about:blank"
+            data-src="${item.file}"
+            title="Flyer: ${item.title}"
+            referrerpolicy="no-referrer"
+          ></iframe>`;
+
+      card.innerHTML = `
+        <div class="seminar-card__preview">
+          ${previewInner}
+        </div>
+        <div class="seminar-card__meta">
+          <div class="seminar-card__date">${fmtLong(item.isoDate)}</div>
+          <div class="seminar-card__title">${item.title}</div>
+        </div>
+        <div class="seminar-card__footer">
+          <a class="seminar-card__link" href="${item.file}">Abrir flyer →</a>
+        </div>
+      `;
+      scroller.appendChild(card);
+    });
+
+    const cards = [...document.querySelectorAll('.seminar-card')];
+    const chips = [...document.querySelectorAll('.timeline__item')];
+
+    // ── Find next upcoming seminar ──────────────────────────────
+    const todayMs = (() => {
+      const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime();
+    })();
+
+    let activeIndex = seminars.findIndex(s => new Date(s.isoDate + 'T00:00:00').getTime() >= todayMs);
+    if (activeIndex === -1) activeIndex = seminars.length - 1;
+
+    // ── Iframe management ──────────────────────────────────────
+    function activateIframe(card) {
+      const iframe = card.querySelector('.seminar-card__iframe');
+      if (!iframe) return;
+      const realSrc = iframe.dataset.src;
+      if (!realSrc || iframe.src.endsWith(realSrc)) return;
+      iframe.classList.remove('is-loaded');
+      iframe.src = realSrc;
+      iframe.onload = () => { iframe.classList.add('is-loaded'); iframe.onload = null; };
+    }
+
+    function deactivateIframe(card) {
+      const iframe = card.querySelector('.seminar-card__iframe');
+      if (!iframe || iframe.src.endsWith('about:blank')) return;
+      iframe.classList.remove('is-loaded');
+      iframe.src = 'about:blank';
+    }
+
+    // ── Helpers ────────────────────────────────────────────────
+    const isDesktop = () => window.innerWidth >= 760;
+    let prevCenterIndex = -1;
+
+    function updatePositions() {
+      cards.forEach((card, i) => {
+        card.classList.remove('pos-center', 'pos-left', 'pos-right', 'is-active');
+        if (isDesktop()) {
+          const offset = i - activeIndex;
+          if (offset === 0)       card.classList.add('pos-center', 'is-active');
+          else if (offset === -1) card.classList.add('pos-left');
+          else if (offset === 1)  card.classList.add('pos-right');
+        } else {
+          card.classList.toggle('is-active', i === activeIndex);
+        }
+      });
+
+      chips.forEach((chip, i) => chip.classList.toggle('is-active', i === activeIndex));
+
+      if (activeIndex !== prevCenterIndex) {
+        if (prevCenterIndex >= 0 && prevCenterIndex < cards.length)
+          deactivateIframe(cards[prevCenterIndex]);
+        activateIframe(cards[activeIndex]);
+        prevCenterIndex = activeIndex;
+      }
+
+      const activeChip = chips[activeIndex];
+      if (activeChip) {
+        const desired = activeChip.offsetLeft - (timeline.clientWidth / 2) + (activeChip.offsetWidth / 2);
+        timeline.scrollTo({ left: desired, behavior: 'smooth' });
+      }
+    }
+
+    function goToIndex(index) {
+      const bounded = Math.max(0, Math.min(index, cards.length - 1));
+      activeIndex = bounded;
+      if (!isDesktop())
+        cards[bounded].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      updatePositions();
+    }
+
+    // ── Event listeners ────────────────────────────────────────
+    cards.forEach((card, i) => {
+      card.addEventListener('click', () => { if (isDesktop() && i !== activeIndex) goToIndex(i); });
+    });
+
+    chips.forEach((chip, i) => chip.addEventListener('click', () => goToIndex(i)));
+    prevBtn.addEventListener('click', () => goToIndex(activeIndex - 1));
+    nextBtn.addEventListener('click', () => goToIndex(activeIndex + 1));
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') goToIndex(activeIndex + 1);
+      if (e.key === 'ArrowLeft')  goToIndex(activeIndex - 1);
+    });
+
+    if (!isDesktop()) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+            const i = Number(entry.target.dataset.index);
+            if (i !== activeIndex) { activeIndex = i; updatePositions(); }
+          }
+        });
+      }, { root: scroller, threshold: 0.6 });
+      cards.forEach(card => observer.observe(card));
+    }
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        updatePositions();
+        if (!isDesktop())
+          cards[activeIndex]?.scrollIntoView({ behavior: 'instant', inline: 'center', block: 'nearest' });
+      }, 120);
+    });
+
+    updatePositions();
+    window.addEventListener('load', () => {
+      requestAnimationFrame(() => {
+        updatePositions();
+        if (!isDesktop())
+          cards[activeIndex]?.scrollIntoView({ behavior: 'instant', inline: 'center', block: 'nearest' });
+      });
+    });
+  </script>
+</body>
+</html>
