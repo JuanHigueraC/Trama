@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAMA — Redes y centralidad · Taller 17 jun</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+  :root{
+    --paper:#E8EAE3;
+    --paper-2:#E0E3DA;
+    --ink:#15201C;
+    --ink-80:rgba(21,32,28,0.82);
+    --ink-62:rgba(21,32,28,0.62);
+    --ink-42:rgba(21,32,28,0.42);
+    --line:rgba(21,32,28,0.16);
+    --grid:rgba(21,32,28,0.05);
+    --grid-strong:rgba(21,32,28,0.095);
+    --teal:#0F6B5C;       /* acento principal */
+    --teal-deep:#0A453B;  /* oscuro */
+    --teal-bright:#198D78; /* claro/realce */
+  }
+
+  html,body{width:100%;height:100%;}
+  body{
+    background:#2F332D;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+    font-family:'IBM Plex Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+
+  /* El flyer mantiene su tamaño de diseño (1080×1620) y se escala
+     con JS para caber completo en cualquier contenedor: el iframe
+     del carrusel (600×780) o la ventana completa al abrirlo directo. */
+  .flyer{
+    position:relative;width:1080px;height:1620px;overflow:hidden;flex:none;
+    background:var(--paper);box-shadow:0 40px 120px rgba(0,0,0,0.55);
+    transform-origin:center center;
+  }
+  .flyer::before{
+    content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      linear-gradient(var(--grid-strong) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px);
+    background-size:40px 40px,40px 40px,200px 200px,200px 200px;
+  }
+  .flyer::after{
+    content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:radial-gradient(ellipse 120% 90% at 50% 40%, transparent 60%, rgba(21,32,28,0.06) 100%);
+  }
+
+  .frame{position:relative;z-index:5;height:100%;padding:58px 64px 50px;
+    display:flex;flex-direction:column;justify-content:space-between;}
+
+  /* ---------- TOP ---------- */
+  .top{display:flex;justify-content:space-between;align-items:center;
+    font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;
+    letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-62);}
+  .top .glyph{color:var(--teal);margin-right:0.6em;letter-spacing:0;}
+  .top .r{color:var(--ink);}
+  .rule{height:1.5px;background:var(--ink);margin:18px 0 24px;}
+
+  .wordmark{font-family:'Archivo Black',sans-serif;font-size:60px;letter-spacing:0.04em;
+    color:var(--ink);line-height:1;display:flex;align-items:center;gap:18px;}
+
+  /* ---------- TITLE ---------- */
+  .head{margin-top:30px;}
+  .kick{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:600;
+    letter-spacing:0.12em;color:var(--teal);margin-bottom:14px;}
+  .kick .ar{color:var(--ink-42);}
+  .h1{font-family:'Archivo',sans-serif;font-weight:900;color:var(--ink);
+    font-size:62px;line-height:1.0;letter-spacing:-0.025em;}
+  .h1 .grad{background:linear-gradient(92deg,var(--teal-bright),var(--teal-deep));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sub{font-size:22px;line-height:1.5;color:var(--ink-80);font-weight:400;
+    max-width:900px;margin-top:18px;}
+  .sub b{font-weight:600;color:var(--ink);}
+
+  /* ---------- BAND: figura + pasos ---------- */
+  .band{display:grid;grid-template-columns:558px 1fr;gap:34px;
+    flex:1 1 auto;min-height:330px;margin:32px 0;}
+
+  .figure{position:relative;border:1.5px solid var(--ink);
+    background:rgba(224,227,218,0.55);display:flex;flex-direction:column;}
+  .figure canvas{flex:1 1 auto;width:100%;min-height:260px;display:block;}
+  .fig-top{position:absolute;top:0;left:0;z-index:2;font-family:'IBM Plex Mono',monospace;
+    font-size:12px;font-weight:600;letter-spacing:0.14em;color:var(--paper);
+    background:var(--ink);padding:5px 11px;}
+  .fig-cap{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-62);
+    border-top:1px solid var(--line);padding:9px 12px;line-height:1.4;}
+  .fig-cap b{color:var(--ink);font-weight:600;}
+
+  .steps-wrap{display:flex;flex-direction:column;}
+  .steps-lab{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+    letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);
+    padding-bottom:10px;border-bottom:1.5px solid var(--ink);margin-bottom:6px;}
+  .step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);
+    flex:1 1 0;align-items:flex-start;}
+  .step:last-child{border-bottom:none;}
+  .step .n{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:15px;
+    color:var(--teal);flex:0 0 26px;padding-top:3px;}
+  .step .t{font-size:18.5px;line-height:1.34;color:var(--ink-80);}
+  .step .t b{color:var(--ink);font-weight:600;}
+
+  /* ---------- FORMATO ---------- */
+  .formato{display:flex;align-items:center;gap:20px;background:var(--ink);
+    color:var(--paper);padding:18px 26px;}
+  .formato .lab{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+    letter-spacing:0.2em;color:var(--teal-bright);}
+  .formato .big{font-family:'Archivo',sans-serif;font-weight:800;font-size:29px;letter-spacing:-0.01em;}
+  .formato .by{font-size:16px;color:rgba(232,234,227,0.78);margin-left:auto;text-align:right;line-height:1.3;}
+  .formato .by b{color:var(--paper);font-weight:600;}
+
+  /* ---------- HERRAMIENTAS ---------- */
+  .tools{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px;}
+  .tool{border:1.5px solid var(--ink);padding:16px 18px;background:rgba(224,227,218,0.45);}
+  .tool .row{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap;}
+  .tool .nm{font-family:'Archivo',sans-serif;font-weight:800;font-size:21px;color:var(--ink);}
+  .tool .tg{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;}
+  .tool.a .tg{background:var(--ink);color:var(--paper);}
+  .tool.b .tg{background:var(--teal);color:var(--paper);}
+  .tool .d{font-size:16px;line-height:1.42;color:var(--ink-62);}
+
+  /* ---------- INFO ---------- */
+  .info{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;}
+  .ibox{border-top:3px solid var(--ink);padding-top:14px;}
+  .ibox .lab{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+    letter-spacing:0.16em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+  .ibox .m{font-size:21px;font-weight:600;color:var(--ink);line-height:1.3;}
+  .ibox .s{font-size:16px;color:var(--ink-62);margin-top:4px;}
+  .meet{display:inline-block;margin-top:9px;font-family:'IBM Plex Mono',monospace;
+    font-size:17px;font-weight:600;color:var(--paper);background:var(--teal);
+    padding:6px 12px;letter-spacing:0.01em;}
+
+  /* ---------- FOOTER ---------- */
+  .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:24px;
+    padding-top:16px;border-top:1px solid var(--line);}
+  .foot .l{font-family:'Archivo Black',sans-serif;font-size:18px;letter-spacing:0.06em;color:var(--ink-42);}
+  .foot .r{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--ink-42);text-align:right;line-height:1.7;}
+</style>
+</head>
+<body>
+  <div class="flyer">
+    <div class="frame">
+
+      <div>
+        <div class="top">
+          <div><span class="glyph">◦—◦</span>Seminario · Ciencias de la Complejidad</div>
+          <div class="r">Jun · 2026</div>
+        </div>
+        <div class="rule"></div>
+        <div class="wordmark">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0F6B5C" stroke-width="2">
+            <line x1="8" y1="30" x2="20" y2="10"/><line x1="20" y1="10" x2="32" y2="26"/><line x1="8" y1="30" x2="32" y2="26"/>
+            <circle cx="20" cy="10" r="5" fill="#0F6B5C" stroke="none"/>
+            <circle cx="8" cy="30" r="3.4" fill="#15201C" stroke="none"/>
+            <circle cx="32" cy="26" r="3.4" fill="#15201C" stroke="none"/>
+          </svg>
+          TRAMA
+        </div>
+      </div>
+
+      <div class="head">
+        <div class="kick">// taller en vivo <span class="ar">·</span> paso a paso <span class="ar">·</span> virtual</div>
+        <h1 class="h1">Introducción al<br>modelamiento y análisis<br>de sistemas <span class="grad">como red</span></h1>
+        <p class="sub">Un recorrido práctico: representar un sistema como red, llevarlo a software,
+          <b>medir la centralidad</b> de sus partes y visualizarlo con sentido.</p>
+      </div>
+
+      <div class="band">
+        <div class="figure">
+          <div class="fig-top">FIG. 1</div>
+          <canvas id="graph"></canvas>
+          <div class="fig-cap">Red libre de escala — <b>tamaño y tono ∝ centralidad de grado</b>. El pulso difunde desde el nodo más central.</div>
+        </div>
+        <div class="steps-wrap">
+          <div class="steps-lab">El taller · cuatro pasos</div>
+          <div class="step"><span class="n">01</span><span class="t"><b>Modelar</b> un sistema como una red.</span></div>
+          <div class="step"><span class="n">02</span><span class="t"><b>Disponerla</b> en formato matemático, manipulable con software.</span></div>
+          <div class="step"><span class="n">03</span><span class="t"><b>Medir la centralidad:</b> el peso de cada parte frente al todo.</span></div>
+          <div class="step"><span class="n">04</span><span class="t"><b>Visualizar</b> la red compleja de manera pertinente.</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="formato">
+          <span class="lab">FORMATO</span>
+          <span class="big">Taller práctico, en vivo</span>
+          <span class="by">Imparte<br><b>Juan C. Higuera C.</b></span>
+        </div>
+
+        <div class="tools">
+          <div class="tool a">
+            <div class="row"><span class="nm">Gephi</span><span class="tg">Descárgalo antes</span></div>
+            <div class="d">Instálalo previo al taller. Estudiaremos el grafo con clics, de forma visual.</div>
+          </div>
+          <div class="tool b">
+            <div class="row"><span class="nm">Python · Colab</span><span class="tg">Sin instalar nada</span></div>
+            <div class="d">Corre en el navegador desde tu Drive. No hay que descargar ni configurar nada.</div>
+          </div>
+        </div>
+
+        <div class="info">
+          <div class="ibox">
+            <div class="lab">Fecha</div>
+            <div class="m">Miércoles · 17 de junio 2026</div>
+            <div class="s">6:00 – 8:00 p.m. · GMT-5 (Bogotá)</div>
+          </div>
+          <div class="ibox">
+            <div class="lab">Virtual · abierto, sin inscripción</div>
+            <div class="m">Únete por Google Meet</div>
+            <span class="meet">meet.google.com/chr-tsqe-kpc</span>
+          </div>
+        </div>
+
+        <div class="foot">
+          <div class="l">TRAMA</div>
+          <div class="r">Seminario permanente<br>Ciencias de la Complejidad · Abya Yala</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+/* Escala el flyer (1080×1620) para que quepa completo en el contenedor,
+   manteniendo proporción y centrado. Funciona dentro del iframe del
+   carrusel y también a pantalla completa. */
+(function(){
+  const flyer=document.querySelector('.flyer');
+  function fit(){
+    if(!flyer) return;
+    const s=Math.min(window.innerWidth/1080, window.innerHeight/1620);
+    flyer.style.transform='scale('+s+')';
+  }
+  fit();
+  window.addEventListener('resize',fit);
+  window.addEventListener('load',fit);
+})();
+</script>
+<script>
+(function(){
+  const cv=document.getElementById('graph'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  let W=558,H=300;
+
+  let seed=20260617;
+  function rng(){ seed=(seed*16807)%2147483647; return (seed-1)/2147483646; }
+
+  // Grafo libre de escala (Barabási–Albert, m=2) -> hubs reales
+  const NN=24,m=2;
+  const adj=Array.from({length:NN},()=>new Set());
+  const deg=new Array(NN).fill(0);
+  function link(a,b){ if(a!==b&&!adj[a].has(b)){adj[a].add(b);adj[b].add(a);deg[a]++;deg[b]++;} }
+  link(0,1);link(1,2);link(2,0);
+  const bag=[0,0,1,1,2,2];
+  for(let i=3;i<NN;i++){ const ch=new Set();
+    while(ch.size<m){ ch.add(bag[Math.floor(rng()*bag.length)]); }
+    ch.forEach(t=>{ link(i,t); bag.push(i); bag.push(t); }); }
+  const maxDeg=Math.max(...deg),minDeg=Math.min(...deg);
+  const hub=deg.indexOf(maxDeg);
+
+  // BFS desde el hub (capas para el pulso)
+  const layer=new Array(NN).fill(-1); layer[hub]=0;
+  let q=[hub],mx=0;
+  while(q.length){ const v=q.shift(); adj[v].forEach(u=>{ if(layer[u]<0){layer[u]=layer[v]+1;mx=Math.max(mx,layer[u]);q.push(u);} }); }
+
+  // Rampa secuencial de un solo tono (teal): claro -> oscuro
+  const stops=[[185,217,205],[127,188,172],[62,154,134],[27,115,99],[12,74,64]];
+  function ramp(t){ t=Math.max(0,Math.min(1,t)); const s=t*(stops.length-1);
+    const i=Math.floor(s),f=s-i,a=stops[i],b=stops[Math.min(i+1,stops.length-1)];
+    return [a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f]; }
+
+  const nodes=new Array(NN);
+  const order=[...Array(NN).keys()].sort((a,b)=>deg[b]-deg[a]);
+  function relayout(){
+    const cx=W/2,cy=H/2; let s2=777;
+    const r2=()=>{ s2=(s2*16807)%2147483647; return (s2-1)/2147483646; };
+    order.forEach((idx,rank)=>{
+      const dn=(deg[idx]-minDeg)/(maxDeg-minDeg||1);
+      const R=(Math.min(W,H)*0.42)*Math.pow(1-dn,0.85)+(rank===0?0:8);
+      const ang=rank*2.39996+r2()*0.4;
+      nodes[idx]={ dn, hx:cx+Math.cos(ang)*R*(W/H)*1.0, hy:cy+Math.sin(ang)*R,
+        ph:r2()*Math.PI*2, amp:0.7+r2()*1.1, sp:0.6+r2()*0.7 };
+    });
+    nodes[hub].hx=cx; nodes[hub].hy=cy;
+  }
+  function size(){ const r=cv.getBoundingClientRect();
+    W=Math.max(200,r.width); H=Math.max(200,r.height);
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); relayout(); }
+
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const PERIOD=4400,SWEEP=0.62; const t0=performance.now();
+
+  function draw(now){
+    const j=reduce?0:1;
+    ctx.clearRect(0,0,W,H);
+    const P=nodes.map(n=>({ x:n.hx+Math.sin(now*0.001*n.sp+n.ph)*n.amp*j,
+                            y:n.hy+Math.cos(now*0.001*n.sp*0.9+n.ph)*n.amp*j }));
+    const pt=reduce?-1:(((now-t0)%PERIOD)/PERIOD);
+
+    for(let a=0;a<NN;a++){ adj[a].forEach(b=>{ if(b<a) return;
+      let active=false,frac=0;
+      const isTree=(layer[b]===layer[a]+1)||(layer[a]===layer[b]+1);
+      if(pt>=0&&isTree){
+        const lo=Math.min(layer[a],layer[b]);
+        const src=(layer[a]<layer[b])?a:b,dst=(src===a)?b:a;
+        const tA=(lo/(mx||1))*SWEEP,tB=((lo+1)/(mx||1))*SWEEP;
+        if(pt>=tA&&pt<=tB+0.08){ active=true; frac=(pt-tA)/((tB-tA)||1); }
+        if(active){
+          ctx.strokeStyle='rgba(25,141,120,0.6)'; ctx.lineWidth=2;
+          ctx.beginPath(); ctx.moveTo(P[src].x,P[src].y); ctx.lineTo(P[dst].x,P[dst].y); ctx.stroke();
+          const fx=Math.max(0,Math.min(1,frac));
+          ctx.beginPath(); ctx.arc(P[src].x+(P[dst].x-P[src].x)*fx,P[src].y+(P[dst].y-P[src].y)*fx,3.4,0,Math.PI*2);
+          ctx.fillStyle='rgba(238,243,237,0.95)'; ctx.fill();
+        }
+      }
+      if(!active){ ctx.strokeStyle='rgba(21,32,28,0.20)'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(P[a].x,P[a].y); ctx.lineTo(P[b].x,P[b].y); ctx.stroke(); }
+    }); }
+
+    for(let i=0;i<NN;i++){
+      const r=3.6+nodes[i].dn*8.6; const [cr,cg,cb]=ramp(nodes[i].dn);
+      if(pt>=0){ const tAct=(layer[i]/(mx||1))*SWEEP; const d=pt-tAct;
+        if(d>=0&&d<0.16){ const k=d/0.16;
+          ctx.beginPath(); ctx.arc(P[i].x,P[i].y,r+2+k*16,0,Math.PI*2);
+          ctx.strokeStyle=`rgba(25,141,120,${(1-k)*0.85})`; ctx.lineWidth=2; ctx.stroke(); } }
+      ctx.beginPath(); ctx.arc(P[i].x,P[i].y,r,0,Math.PI*2);
+      ctx.fillStyle=`rgb(${cr|0},${cg|0},${cb|0})`; ctx.fill();
+      ctx.lineWidth=1.2; ctx.strokeStyle='rgba(21,32,28,0.45)'; ctx.stroke();
+    }
+    if(!reduce) requestAnimationFrame(draw);
+  }
+
+  function start(){ size();
+    if('ResizeObserver' in window){ new ResizeObserver(()=>{ size(); if(reduce) requestAnimationFrame(draw); }).observe(cv); }
+    requestAnimationFrame(draw); }
+  if(document.readyState==='complete') start(); else window.addEventListener('load',start);
+})();
+</script>
+</body>
+</html>
