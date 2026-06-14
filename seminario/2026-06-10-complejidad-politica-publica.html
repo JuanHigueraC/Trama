@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAMA — Complejidad y Política Pública</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:        #04070D;
+    --gold:      #E6B043;
+    --gold-lt:   #F2CB6C;
+    --amber:     #D99A38;
+    --cyan:      #46BFD6;
+    --cyan-lt:   #84DBE8;
+    --blue:      #3A78B4;
+    --blue-lt:   #6BA0D6;
+    --slate:     #25324A;
+    --cream:     #F5F1E6;
+    --cream-dim: #DCD6C8;
+    --muted:     #687690;
+    --muted-lt:  #A6B4CA;
+  }
+
+  body {
+    background: #142336;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .flyer {
+    width: 600px;
+    height: 780px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 55px 160px rgba(0,0,0,0.75),
+      0 10px 40px rgba(0,0,0,0.45),
+      inset 0 0 0 1px rgba(70,191,214,0.14);
+  }
+
+  /* ── CANVAS ── */
+  #netBg {
+    position: absolute; top: 0; left: 0;
+    width: 600px; height: 780px;
+    z-index: 1;
+  }
+
+  /* ── OVERLAY — claro arriba (se ve la red), muy oscuro de la mitad para abajo ── */
+  .overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      rgba(4,7,13,0.30)  0%,
+      rgba(4,7,13,0.05)  9%,
+      rgba(4,7,13,0.18) 22%,
+      rgba(4,7,13,0.58) 32%,
+      rgba(4,7,13,0.82) 42%,
+      rgba(4,7,13,0.92) 56%,
+      rgba(4,7,13,0.95) 75%,
+      rgba(4,7,13,0.97) 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Scrim radial extra detrás del título para garantizar lectura */
+  .text-scrim {
+    position: absolute;
+    left: 0; right: 0; top: 230px; height: 330px;
+    z-index: 3; pointer-events: none;
+    background: radial-gradient(120% 80% at 35% 45%,
+      rgba(4,7,13,0.78) 0%,
+      rgba(4,7,13,0.55) 45%,
+      rgba(4,7,13,0) 100%);
+  }
+
+  /* ── GRAIN ── */
+  .grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    opacity: 0.32; z-index: 25;
+    mix-blend-mode: screen; pointer-events: none;
+  }
+
+  /* ── TOP STRIP ── */
+  .top-strip {
+    position: relative; z-index: 10;
+    padding: 11px 32px;
+    border-bottom: 1px solid rgba(70,191,214,0.32);
+    background: rgba(3,5,10,0.82);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .seminario-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 3.5px;
+    color: var(--cream); text-transform: uppercase; opacity: 0.78;
+  }
+
+  .date-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 8.5px; letter-spacing: 2px;
+    color: var(--cyan-lt); text-transform: uppercase; opacity: 1;
+  }
+
+  /* ── LOGO ── */
+  .logo-area {
+    position: relative; z-index: 10;
+    padding: 16px 36px 0;
+  }
+
+  .trama-logo-wrap {
+    position: relative;
+    display: inline-block; line-height: 1;
+  }
+
+  .trama-ghost {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 74px; letter-spacing: 12px;
+    color: var(--cyan); opacity: 0.14;
+    position: absolute; top: 5px; left: 5px;
+    user-select: none; pointer-events: none;
+  }
+
+  .trama-solid {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 74px; letter-spacing: 12px;
+    color: var(--cream);
+    position: relative; z-index: 2;
+    opacity: 0.95;
+    text-shadow: 0 2px 30px rgba(3,5,10,0.95);
+  }
+
+  .logo-rule {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg,
+      rgba(70,191,214,0.70) 0%,
+      rgba(70,191,214,0.28) 55%,
+      transparent 88%);
+    margin-top: 6px;
+  }
+
+  /* ── TITLE BLOCK ── */
+  .title-block {
+    position: relative; z-index: 10;
+    padding: 0 36px;
+    margin-top: 48px;
+  }
+
+  .title-row-l  { text-align: left;   line-height: 1; }
+  .title-row-r  { text-align: right;  line-height: 1; margin-top: 0; }
+  .title-row-l2 { text-align: left;   line-height: 1; margin-top: 7px; padding-left: 4px; }
+
+  .t-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 700;
+    font-size: 58px;
+    line-height: 0.94;
+    color: var(--cream);
+    letter-spacing: -0.8px;
+    display: inline;
+    text-shadow:
+      0 2px 18px rgba(3,5,10,1),
+      0 0 40px rgba(3,5,10,0.95),
+      0 0 80px rgba(3,5,10,0.7);
+  }
+
+  .t-med {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 40px;
+    line-height: 0.96;
+    color: var(--cream);
+    letter-spacing: -0.4px;
+    display: inline;
+    opacity: 0.95;
+    text-shadow:
+      0 2px 18px rgba(3,5,10,1),
+      0 0 40px rgba(3,5,10,0.9);
+  }
+
+  .t-italic  { font-style: italic; }
+  .t-gold    { color: var(--gold-lt); opacity: 1 !important;
+               text-shadow: 0 2px 16px rgba(3,5,10,1), 0 0 34px rgba(230,176,67,0.30); }
+  .t-cyan    { color: var(--cyan-lt); opacity: 1 !important;
+               text-shadow: 0 2px 16px rgba(3,5,10,1), 0 0 30px rgba(70,191,214,0.30); }
+
+  /* ── DIVIDER ── */
+  .title-divider {
+    display: flex; align-items: center; gap: 9px;
+    margin: 13px 0 10px;
+  }
+
+  .td-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(70,191,214,0.60), rgba(70,191,214,0.14));
+  }
+  .td-line.r {
+    background: linear-gradient(270deg, rgba(70,191,214,0.60), rgba(70,191,214,0.14));
+  }
+  .td-diamond {
+    width: 6px; height: 6px;
+    background: var(--cyan); opacity: 0.85;
+    transform: rotate(45deg); flex-shrink: 0;
+  }
+
+  /* ── SMALL SUBTITLE — ahora bien legible ── */
+  .title-small {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400; font-size: 14.5px;
+    color: var(--cream); opacity: 0.86;
+    line-height: 1.55;
+    letter-spacing: 0.1px;
+    text-shadow: 0 1px 10px rgba(3,5,10,0.95);
+  }
+  .title-small em {
+    font-style: italic;
+    color: var(--cyan-lt);
+    opacity: 1;
+  }
+
+  /* ── DIÁLOGOS ── */
+  .dialogos-block {
+    position: relative; z-index: 10;
+    margin: 12px 36px 0;
+    padding: 10px 0;
+    border-top: 1px solid rgba(70,191,214,0.24);
+    border-bottom: 1px solid rgba(70,191,214,0.24);
+  }
+
+  .dialogos-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8.5px; letter-spacing: 3.5px;
+    color: var(--gold); text-transform: uppercase;
+    opacity: 0.95; margin-bottom: 7px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dialogos-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(230,176,67,0.40), transparent);
+  }
+
+  .dialogos-text {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400; font-size: 13px;
+    color: var(--cream); opacity: 0.82;
+    line-height: 1.65; letter-spacing: 0.15px;
+    text-shadow: 0 1px 8px rgba(3,5,10,0.9);
+  }
+
+  /* ── SPEAKER ── */
+  .speaker-block {
+    position: relative; z-index: 10;
+    margin: 12px 36px 0;
+    padding: 12px 20px;
+    background: rgba(70,191,214,0.10);
+    border-left: 4px solid var(--cyan);
+  }
+
+  .speaker-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8.5px; letter-spacing: 3.5px;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 5px; opacity: 0.9;
+  }
+
+  .speaker-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 3px;
+    color: var(--cream); line-height: 1.05; opacity: 1;
+    text-shadow: 0 2px 14px rgba(3,5,10,0.9);
+  }
+
+  .speaker-role {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px; font-weight: 400;
+    color: var(--muted-lt); margin-top: 4px; opacity: 1;
+  }
+
+  /* ── INFO ── */
+  .info-section {
+    position: relative; z-index: 10;
+    padding: 13px 36px;
+    margin-top: 10px;
+    border-top: 1px solid rgba(70,191,214,0.20);
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .info-item { display: flex; align-items: flex-start; gap: 11px; }
+
+  .info-icon {
+    width: 22px; height: 22px; flex-shrink: 0;
+    color: var(--cyan); opacity: 0.9; margin-top: 1px;
+  }
+
+  .info-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 3px;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 4px; opacity: 0.92;
+  }
+
+  .info-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px; font-weight: 600;
+    color: var(--cream); line-height: 1.5; opacity: 0.96;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0; z-index: 10;
+    border-top: 1px solid rgba(70,191,214,0.28);
+    background: rgba(2,4,8,0.92);
+    backdrop-filter: blur(10px);
+    padding: 12px 36px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .footer-trama {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 6px;
+    color: var(--cream); opacity: 0.42;
+  }
+
+  .footer-info {
+    font-family: 'Space Mono', monospace;
+    font-size: 7px; letter-spacing: 2px;
+    color: var(--cream); opacity: 0.38;
+    text-transform: uppercase; text-align: right; line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<div class="flyer">
+
+  <canvas id="netBg" width="600" height="780"></canvas>
+  <div class="overlay"></div>
+  <div class="text-scrim"></div>
+  <div class="grain"></div>
+
+  <!-- TOP STRIP -->
+  <div class="top-strip">
+    <span class="seminario-badge">✦ Seminario Ciencias de la Complejidad</span>
+    <span class="date-tag">Junio 2026</span>
+  </div>
+
+  <!-- LOGO -->
+  <div class="logo-area">
+    <div class="trama-logo-wrap">
+      <span class="trama-ghost" aria-hidden="true">TRAMA</span>
+      <span class="trama-solid">TRAMA</span>
+    </div>
+    <div class="logo-rule"></div>
+  </div>
+
+  <!-- TITLE -->
+  <div class="title-block">
+    <div class="title-row-l">
+      <span class="t-big">Ciencias de la</span>
+    </div>
+    <div class="title-row-r">
+      <span class="t-big t-italic t-gold">complejidad</span>
+    </div>
+    <div class="title-row-l2">
+      <span class="t-med t-italic t-cyan">en la política pública</span>
+    </div>
+    <div class="title-divider">
+      <div class="td-line"></div>
+      <div class="td-diamond"></div>
+      <div class="td-line r"></div>
+    </div>
+    <div class="title-small">
+      sistemas adaptativos, emergencia y decisiones colectivas
+      en el <em>diseño de lo público</em>
+    </div>
+  </div>
+
+  <!-- DIÁLOGOS -->
+  <div class="dialogos-block">
+    <div class="dialogos-label">conversatorio · diálogos entre</div>
+    <div class="dialogos-text">
+      las ciencias de la complejidad, el análisis de políticas públicas,<br>
+      la teoría de sistemas y la gobernanza de lo común
+    </div>
+  </div>
+
+  <!-- SPEAKER -->
+  <div class="speaker-block">
+    <div class="speaker-label">Formato</div>
+    <div class="speaker-name">Conversatorio</div>
+    <div class="speaker-role">Ciencias de la Complejidad · UNAL</div>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-section">
+    <div class="info-item">
+      <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <div>
+        <div class="info-label">Fecha</div>
+        <div class="info-value">Miércoles · 10 de Junio 2026<br>6:00 – 8:00 p.m.</div>
+      </div>
+    </div>
+    <div class="info-item">
+      <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      <div>
+        <div class="info-label">Lugar</div>
+        <div class="info-value">Sala de Música<br>Biblioteca Central · UNAL Bogotá</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="footer-trama">TRAMA</span>
+    <span class="footer-info">Seminario permanente<br>Ciencias de la Complejidad · UNAL</span>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+//  DELIBERATION NETWORK — header band
+//  La red se concentra en la franja superior (header animado); debajo,
+//  partículas lentas y muy tenues que dan vida sin estorbar al texto.
+// ══════════════════════════════════════════════════════════════════════════
+const canvas = document.getElementById('netBg');
+const ctx    = canvas.getContext('2d');
+const W = 600, H = 780;
+
+// Centro de la red en la franja superior
+const FX = 300, FY = 150;
+
+function makeLCG(seed){ let s=seed>>>0; return ()=>{ s=Math.imul(1664525,s)+1013904223>>>0; return s/0xFFFFFFFF; }; }
+const rng = makeLCG(91);
+
+const C = {
+  gold:   [230, 176,  67],
+  goldLt: [242, 203, 108],
+  cyan:   [ 70, 191, 214],
+  cyanLt: [132, 219, 232],
+  blue:   [ 58, 120, 180],
+  blueLt: [107, 160, 214],
+  slate:  [ 37,  50,  74],
+  cream:  [245, 241, 230],
+};
+function rgba([r,g,b],a){ return `rgba(${r|0},${g|0},${b|0},${a.toFixed(3)})`; }
+function lerpC(ca,cb,t){ t=Math.max(0,Math.min(1,t)); return [ca[0]+(cb[0]-ca[0])*t,ca[1]+(cb[1]-ca[1])*t,ca[2]+(cb[2]-ca[2])*t]; }
+
+// Hubs institucionales (en la franja superior)
+const N_HUBS = 4;
+const hubs = [];
+for (let i=0;i<N_HUBS;i++){
+  const a = (i/N_HUBS)*Math.PI*2 + 0.5;
+  const r = 95 + rng()*70;
+  hubs.push({
+    x: FX + Math.cos(a)*r*1.35,
+    y: FY + Math.sin(a)*r*0.62,
+    ox:0, oy:0,
+    fx:0.18+rng()*0.20, fy:0.16+rng()*0.20, ph:rng()*Math.PI*2,
+    rippleT:rng(), rippleSpeed:0.0017+rng()*0.0012,
+    isGold:i%2===0,
+  });
+}
+
+// Agentes — concentrados arriba (y mayormente 20–235)
+const N_AGENTS = 64;
+const agents = [];
+for (let i=0;i<N_AGENTS;i++){
+  const a = rng()*Math.PI*2;
+  const r = 25 + rng()*255;
+  const x = FX + Math.cos(a)*r;
+  let   y = FY + Math.sin(a)*r*0.62;
+  y = Math.max(8, Math.min(250, y));
+  agents.push({
+    hx:x, hy:y, x, y,
+    sz:1.0+rng()*2.4,
+    fx:0.15+rng()*0.45, fy:0.13+rng()*0.42,
+    amp:5+rng()*15, ph:rng()*Math.PI*2,
+    cm:rng(), homeHub:Math.floor(rng()*N_HUBS), pull:0.10+rng()*0.30,
+  });
+}
+
+// Partículas tenues para la zona baja (vida sutil bajo el texto)
+const N_DUST = 26;
+const dust = [];
+for (let i=0;i<N_DUST;i++){
+  dust.push({ x:rng()*W, y:300+rng()*(H-340), sz:0.5+rng()*1.1,
+              f:0.10+rng()*0.30, amp:6+rng()*14, ph:rng()*Math.PI*2 });
+}
+
+const LINK_DIST=90, HUB_DIST=160;
+let t=0;
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  t+=0.006;
+  const pulse=Math.sin(t*2.0)*0.5+0.5;
+
+  // Wash superior
+  const wash=ctx.createRadialGradient(FX,FY,0,FX,FY,360);
+  wash.addColorStop(0,   rgba(C.blue,0.16));
+  wash.addColorStop(0.4, rgba(C.blue,0.11));
+  wash.addColorStop(0.75,rgba(C.slate,0.08));
+  wash.addColorStop(1,   rgba(C.slate,0));
+  ctx.fillStyle=wash; ctx.fillRect(0,0,W,H);
+
+  // Grid tenue (solo arriba)
+  ctx.save(); ctx.lineWidth=0.45; ctx.strokeStyle=rgba(C.cyan,0.028);
+  for(let y=0;y<300;y+=26){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  for(let x=0;x<W;x+=26){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,300); ctx.stroke(); }
+  ctx.restore();
+
+  // Hubs animados
+  for(const h of hubs){ h.ox=Math.sin(t*h.fx+h.ph)*9; h.oy=Math.cos(t*h.fy+h.ph)*6; }
+
+  // Agentes animados (drift + gravitación al hub)
+  for(const ag of agents){
+    const h=hubs[ag.homeHub];
+    const tx=ag.hx+Math.sin(t*ag.fx+ag.ph)*ag.amp;
+    const ty=ag.hy+Math.cos(t*ag.fy+ag.ph)*ag.amp;
+    ag.x=tx+((h.x+h.ox)-tx)*ag.pull*0.18;
+    ag.y=ty+((h.y+h.oy)-ty)*ag.pull*0.18;
+  }
+
+  // Ondas de influencia
+  for(const h of hubs){
+    h.rippleT=(h.rippleT+h.rippleSpeed)%1;
+    const hx=h.x+h.ox, hy=h.y+h.oy;
+    const col=h.isGold?C.gold:C.cyanLt;
+    for(let k=0;k<2;k++){
+      const phase=(h.rippleT+k*0.5)%1;
+      const rr=phase*200;
+      const a=Math.sin(phase*Math.PI)*0.18;
+      ctx.beginPath(); ctx.arc(hx,hy,rr,0,Math.PI*2);
+      ctx.strokeStyle=rgba(col,a); ctx.lineWidth=1.3; ctx.stroke();
+    }
+  }
+
+  // Enlaces agente–agente
+  for(let i=0;i<agents.length;i++){
+    const a=agents[i];
+    for(let j=i+1;j<agents.length;j++){
+      const b=agents[j];
+      const dx=a.x-b.x, dy=a.y-b.y; const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<LINK_DIST){
+        const w=1-d/LINK_DIST;
+        const flick=0.6+0.4*Math.sin(t*1.6+(a.ph+b.ph));
+        const col=(a.homeHub===b.homeHub)?C.cyan:C.blueLt;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=rgba(col,w*w*0.28*flick); ctx.lineWidth=w*1.2; ctx.stroke();
+      }
+    }
+  }
+
+  // Enlaces agente–hub
+  for(const ag of agents){
+    const h=hubs[ag.homeHub]; const hx=h.x+h.ox, hy=h.y+h.oy;
+    const dx=ag.x-hx, dy=ag.y-hy; const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<HUB_DIST){
+      const w=1-d/HUB_DIST; const col=h.isGold?C.gold:C.cyan;
+      ctx.beginPath(); ctx.moveTo(ag.x,ag.y); ctx.lineTo(hx,hy);
+      ctx.strokeStyle=rgba(col,w*0.16); ctx.lineWidth=w*1.0; ctx.stroke();
+    }
+  }
+
+  // Agentes
+  for(const ag of agents){
+    const h=hubs[ag.homeHub]; const hx=h.x+h.ox, hy=h.y+h.oy;
+    const dh=Math.hypot(ag.x-hx,ag.y-hy); const near=Math.max(0,1-dh/HUB_DIST);
+    let col=lerpC(C.blueLt,C.cyanLt,ag.cm);
+    if(near>0.5) col=lerpC(col,h.isGold?C.goldLt:C.cyanLt,(near-0.5)*1.4);
+    ctx.beginPath(); ctx.arc(ag.x,ag.y,ag.sz,0,Math.PI*2);
+    ctx.fillStyle=rgba(col,0.42+near*0.45); ctx.fill();
+  }
+
+  // Hubs
+  for(const h of hubs){
+    const hx=h.x+h.ox, hy=h.y+h.oy; const col=h.isGold?C.goldLt:C.cyanLt;
+    const r=5+pulse*1.8;
+    const g=ctx.createRadialGradient(hx,hy,0,hx,hy,r*7);
+    g.addColorStop(0,rgba(col,0.34+pulse*0.12)); g.addColorStop(0.4,rgba(col,0.12)); g.addColorStop(1,rgba(col,0));
+    ctx.beginPath(); ctx.arc(hx,hy,r*7,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+    ctx.beginPath(); ctx.arc(hx,hy,r+3,0,Math.PI*2); ctx.strokeStyle=rgba(col,0.34); ctx.lineWidth=1.1; ctx.stroke();
+    ctx.beginPath(); ctx.arc(hx,hy,r,0,Math.PI*2); ctx.fillStyle=rgba(C.cream,0.92); ctx.fill();
+  }
+
+  // Polvo tenue (zona baja)
+  for(const d of dust){
+    const x=d.x+Math.sin(t*d.f+d.ph)*d.amp;
+    const y=d.y+Math.cos(t*d.f*0.8+d.ph)*d.amp*0.6;
+    ctx.beginPath(); ctx.arc(x,y,d.sz,0,Math.PI*2);
+    ctx.fillStyle=rgba(C.cyan,0.10); ctx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
